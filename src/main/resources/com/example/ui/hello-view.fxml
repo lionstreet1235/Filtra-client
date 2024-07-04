@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.ui.controller.ClientController" stylesheets="@styles.css">
+    <top>
+        <HBox spacing="10" alignment="CENTER_RIGHT" BorderPane.alignment="CENTER">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+            <Label text="FTP Client" styleClass="header-label"/>
+            <Button text="Profile" styleClass="toolbar-button" fx:id="profileButton"/>
+            <Button text="Trợ giúp" styleClass="toolbar-button" fx:id="helpButton"/>
+        </HBox>
+    </top>
+    <center>
+        <TabPane>
+            <Tab text="Connection">
+                <VBox spacing="10" alignment="CENTER_RIGHT">
+                    <padding>
+                        <Insets top="10" right="10" bottom="10" left="10"/>
+                    </padding>
+                    <GridPane hgap="10" vgap="10">
+                        <Label text="Server:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                        <TextField fx:id="serverField" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+
+                        <Label text="Port:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                        <TextField fx:id="portField" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+
+                        <Label text="Username:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                        <TextField fx:id="usernameField" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+
+                        <Label text="Password:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+                        <PasswordField fx:id="passwordField" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+
+                        <HBox spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                            <Button text="Connect" styleClass="connect-button" fx:id="connectButton" onAction="#connectToServer"/>
+                            <Button text="Register" styleClass="register-button" fx:id="registerButton" onAction="#showRegistrationWindow"/>
+                        </HBox>
+                    </GridPane>
+                    <ImageView fx:id="logoImageView" fitHeight="150" fitWidth="200" styleClass="logo-huflit">
+                        <image>
+                            <Image url="https://firebasestorage.googleapis.com/v0/b/fastdeli-5cee0.appspot.com/o/logo.png?alt=media&amp;token=9579b645-903d-4c20-ad4b-7f7a47c3f0d2"/>
+                        </image>
+                    </ImageView>
+                </VBox>
+            </Tab>
+            <Tab text="Files">
+                <HBox spacing="10">
+                    <padding>
+                        <Insets top="10" right="10" bottom="10" left="10"/>
+                    </padding>
+                    <VBox spacing="10" alignment="TOP_LEFT">
+                        <Label text="Remote Files" styleClass="section-label"/>
+                        <ListView fx:id="remoteFilesList" prefWidth="600" prefHeight="400"/>
+                    </VBox>
+                    <VBox spacing="10" alignment="CENTER_LEFT">
+                        <Button text="Download" styleClass="action-button" fx:id="downloadButton" onAction="#downloadFile"/>
+                        <Button text="Upload" styleClass="action-button" fx:id="uploadButton" onAction="#browseFileNew"/>
+                        <Button text="Show Files" styleClass="action-button" fx:id="showFilesButton" onAction="#showUserFile"/>
+                    </VBox>
+                </HBox>
+            </Tab>
+        </TabPane>
+    </center>
+    <bottom>
+        <HBox spacing="10" alignment="CENTER" BorderPane.alignment="CENTER">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+            <Label fx:id="statusLabel" text="Status: Disconnected" styleClass="status-label"/>
+        </HBox>
+    </bottom>
+</BorderPane>
