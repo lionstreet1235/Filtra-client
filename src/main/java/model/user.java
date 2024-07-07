@@ -8,13 +8,14 @@ public class user {
     private String password;
     private String email;
     private String fullname;
-    private Date date_created;
-    private byte anonymous;
-    private byte activated;
-    private byte blocked;
-    private byte id_role;
+    private String date_created;
+    private String anonymous;
+    private String activated;
+    private String blocked;
+    private String id_role;
 
-    public user(int id, String username, String password, String email, String fullname, Date date_created, byte anonymous, byte activated, byte blocked, byte id_role) {
+    public user() {}
+    public user(int id, String username, String password, String email, String fullname, String date_created, String anonymous, String activated, String blocked, String id_role) {
         this.id = id;
         this.username = username;
         this.password = password;
@@ -67,43 +68,43 @@ public class user {
         this.fullname = fullname;
     }
 
-    public Date getDate_created() {
+    public String getDate_created() {
         return date_created;
     }
 
-    public void setDate_created(Date date_created) {
+    public void setDate_created(String date_created) {
         this.date_created = date_created;
     }
 
-    public byte getAnonymous() {
+    public String getAnonymous() {
         return anonymous;
     }
 
-    public void setAnonymous(byte anonymous) {
+    public void setAnonymous(String anonymous) {
         this.anonymous = anonymous;
     }
 
-    public byte getActivated() {
+    public String getActivated() {
         return activated;
     }
 
-    public void setActivated(byte activated) {
+    public void setActivated(String activated) {
         this.activated = activated;
     }
 
-    public byte getBlocked() {
+    public String getBlocked() {
         return blocked;
     }
 
-    public void setBlocked(byte blocked) {
+    public void setBlocked(String blocked) {
         this.blocked = blocked;
     }
 
-    public byte getId_role() {
+    public String getId_role() {
         return id_role;
     }
 
-    public void setId_role(byte id_role) {
+    public void setId_role(String id_role) {
         this.id_role = id_role;
     }
 }

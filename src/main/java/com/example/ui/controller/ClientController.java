@@ -2,19 +2,21 @@ package com.example.ui.controller;
 
 import com.example.ui.HelloApplication;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import model.user;
 
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ClientController {
 
@@ -24,9 +26,9 @@ public class ClientController {
     private Socket controlSocket = null;
     private BufferedReader in = null;
     private PrintWriter out = null;
+    private final user user_login = new user();
 
     private List<String> fileListFromServer;
-
 
     @FXML
     private TextField serverField;
@@ -63,15 +65,31 @@ public class ClientController {
 
     @FXML
     private Button helpButton;
+
     @FXML
     private Button showFilesButton;
+
+    // View Show Profile
+    @FXML
+    private Text unameProfilefield;
+    @FXML
+    private Text emailfield;
+    @FXML
+    private Text fullnamefield;
+    @FXML
+    private Text activefield;
+    @FXML
+    private Text anonymousfiled;
+    @FXML
+    private Text activatedfiled;
+    @FXML
+    private Text blockedfiled;
 
     @FXML
     private void initialize() throws IOException {
         connectButton.setOnAction(event -> connectToServer());
         uploadButton.setOnAction(event -> browseFileNew());
-
-        profileButton.setOnAction(event -> showProfile());
+        profileButton.setOnAction(event -> showUserInfo());
         helpButton.setOnAction(event -> showHelp());
         uploadButton.setDisable(false);
         downloadButton.setDisable(false);
@@ -90,13 +108,14 @@ public class ClientController {
 
         new Thread(() -> {
             try {
+
                 controlSocket = new Socket(server, port);
                 in = new BufferedReader(new InputStreamReader(controlSocket.getInputStream()));
                 out = new PrintWriter(controlSocket.getOutputStream(), true);
 
                 // Send "LOG" command to the server with username and password as arguments
                 sendCommand("LOG", username, password);
-
+                showProfile();
 
             } catch (IOException e) {
                 Platform.runLater(() -> statusLabel.setText("Connection failed: " + e.getMessage()));
@@ -134,6 +153,9 @@ public class ClientController {
                         case "REG":
                             statusLabel.setText(response);
                             break;
+                        case "SHOW":
+                            statusLabel.setText(response);
+                            break;
                         default:
                             statusLabel.setText("Server response: " + response);
                             break;
@@ -163,8 +185,6 @@ public class ClientController {
 
     @FXML
     private void browseFileNew() {
-
-
         sendCommand("UP");
 
         FileChooser fileChooser = new FileChooser();
@@ -180,16 +200,10 @@ public class ClientController {
             System.out.println(fileName);
             out.println(fileName);
 
-
-
             new Thread(() -> {
-
                 try (Socket dataSocket = new Socket(SERVER_NAME, DATA_PORT);
                      BufferedInputStream fileIn = new BufferedInputStream(new FileInputStream(uploadFile));
                      BufferedOutputStream dataOut = new BufferedOutputStream(dataSocket.getOutputStream())) {
-
-
-
 
                     byte[] buffer = new byte[4096];
                     int bytesRead;
@@ -200,8 +214,8 @@ public class ClientController {
                     dataSocket.close();
 
                     String response = in.readLine();
-                    if(response.startsWith("STARTING UPLOAD ...")){
-                        Platform.runLater(() -> statusLabel.setText("UPLOAD COMPLETE ! "));
+                    if (response.startsWith("STARTING UPLOAD ...")) {
+                        Platform.runLater(() -> statusLabel.setText("UPLOAD COMPLETE!"));
                     }
 
                 } catch (IOException e) {
@@ -262,6 +276,64 @@ public class ClientController {
         }).start();
     }
 
+    private void showProfile() {
+        try {
+            sendCommand("SHOW");
+            String response;
+            while ((response = in.readLine()) != null) {
+                if (response.contains("REQUIRED")) {
+                    Platform.runLater(() -> statusLabel.setText("Login required!"));
+                    return;
+                } else if (response.contains("User name: ")) {
+                    String userName = response.substring("User name: ".length());
+                    user_login.setUsername(userName);
+                } else if (response.contains("Email: ")) {
+                    String email = response.substring("Email: ".length());
+                    user_login.setEmail(email);
+                } else if (response.contains("Full name: ")) {
+                    String fullName = response.substring("Full name: ".length());
+                    user_login.setFullname(fullName);
+                } else if (response.contains("Activated time: ")) {
+                    String activatedtime = response.substring("Activated time: ".length());
+                    user_login.setDate_created(activatedtime);
+                } else if (response.contains("Anonymous account: ")) {
+                    String anonymous = response.substring("Anonymous account: ".length());
+                    user_login.setAnonymous(anonymous);
+                } else if (response.contains("Activated account: ")) {
+                    String activated = response.substring("Activated account: ".length());
+                    user_login.setActivated(activated);
+                } else if (response.contains("Blocked account: ")) {
+                    String blocked = response.substring("Blocked account: ".length());
+                    user_login.setBlocked(blocked);
+                } else if (response.contains("END_OF_INFO")) {
+                    break;
+                }
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @FXML
+    private void showUserInfo() {
+        new Thread(() -> {
+            try {
+
+                Platform.runLater(() -> {
+                    unameProfilefield.setText(user_login.getUsername());
+                    emailfield.setText(user_login.getEmail());
+                    fullnamefield.setText(user_login.getFullname());
+                    activefield.setText(user_login.getDate_created());
+                    anonymousfiled.setText(user_login.getAnonymous());
+                    activatedfiled.setText(user_login.getActivated());
+                    blockedfiled.setText(user_login.getBlocked());
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
+
     @FXML
     private void showUserFile() {
         new Thread(() -> {
@@ -288,11 +360,12 @@ public class ClientController {
     private void receiveFileListFromServer(List<String> response) {
         remoteFilesList.getItems().setAll(response);
     }
-    private void showProfile() {
-        statusLabel.setText("Profile button clicked!");
-    }
 
     private void showHelp() {
         statusLabel.setText("Help button clicked!");
+    }
+
+    public void logout(ActionEvent actionEvent) {
+        // Handle logout action
     }
 }
