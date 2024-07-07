@@ -3,7 +3,16 @@
     -fx-font-weight: bold;
     -fx-text-fill: black; /* Change text color to black */
 }
+.field-label{
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-text-fill: black; /* Change text color to black */
 
+}
+.textInfo{
+    -fx-font-size: 10px;
+    -fx-text-fill: black;
+}
 .connect-button,  .register-button, .browse-button {
     -fx-background-color: #4CAF50; /* Green */
     -fx-text-fill: white;
