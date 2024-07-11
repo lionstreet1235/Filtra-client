@@ -12,12 +12,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ConnectException;
-import java.net.Socket;
+
 
 public class OtpViewController {
-    private final String SERVER_NAME = "localhost";
-    private final int CONTROL_PORT = 2100;
-
 
     @FXML
     private TextField otpField;
