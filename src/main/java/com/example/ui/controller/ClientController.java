@@ -1,6 +1,7 @@
 package com.example.ui.controller;
 
 import com.example.ui.HelloApplication;
+import com.google.gson.Gson;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -11,7 +12,7 @@ import javafx.scene.control.*;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import model.user;
+import com.example.ui.model.User;
 
 import java.io.*;
 import java.net.Socket;
@@ -23,10 +24,11 @@ public class ClientController {
     private static final String SERVER_NAME = "localhost";
     private static final int DATA_PORT = 2000;
     private static final int CONTROL_PORT = 2100;
-    private Socket controlSocket = null;
+    public static Socket controlSocket = null;
     private BufferedReader in = null;
     private PrintWriter out = null;
-    private final user user_login = new user();
+    private static User user_login;
+
 
     private List<String> fileListFromServer;
 
@@ -89,7 +91,7 @@ public class ClientController {
     private void initialize() throws IOException {
         connectButton.setOnAction(event -> connectToServer());
         uploadButton.setOnAction(event -> browseFileNew());
-        profileButton.setOnAction(event -> showUserInfo());
+//        profileButton.setOnAction(event -> showUserInfo());
         helpButton.setOnAction(event -> showHelp());
         uploadButton.setDisable(false);
         downloadButton.setDisable(false);
@@ -97,6 +99,7 @@ public class ClientController {
         controlSocket = new Socket(SERVER_NAME, CONTROL_PORT);
         in = new BufferedReader(new InputStreamReader(controlSocket.getInputStream()));
         out = new PrintWriter(controlSocket.getOutputStream(), true);
+
     }
 
     @FXML
@@ -113,9 +116,23 @@ public class ClientController {
                 in = new BufferedReader(new InputStreamReader(controlSocket.getInputStream()));
                 out = new PrintWriter(controlSocket.getOutputStream(), true);
 
-                // Send "LOG" command to the server with username and password as arguments
-                sendCommand("LOG", username, password);
-                showProfile();
+
+                out.println("LOG");
+                String response = in.readLine();
+                if (response.contains("You need to logout first!")) {
+                    return;
+                }
+
+                out.println(username);
+                out.println(password);
+                String login_status = in.readLine();
+                if(response.contains("-- LOGIN --")) {
+                    Platform.runLater(() -> statusLabel.setText("Loggin successful!"));
+                }
+                Gson gson = new Gson();
+                user_login = gson.fromJson(login_status, User.class);
+
+//                showProfile(); server chua code lai
 
             } catch (IOException e) {
                 Platform.runLater(() -> statusLabel.setText("Connection failed: " + e.getMessage()));
@@ -123,49 +140,7 @@ public class ClientController {
         }).start();
     }
 
-    private void sendCommand(String command, String... args) {
-        new Thread(() -> {
-            try {
-                out.println(command);
-                for (String arg : args) {
-                    out.println(arg);
-                }
-                String response = in.readLine();
-                Platform.runLater(() -> {
-                    switch (command) {
-                        case "LOG":
-                            if (response.startsWith("LOGIN SUCCESSFUL")) {
-                                statusLabel.setText(response);
-                                uploadButton.setDisable(false);
-                                downloadButton.setDisable(false);
-                                showUserFile();
-                            } else {
-                                statusLabel.setText("Login status: " + response);
-                            }
-                            break;
-                        case "UP":
-                            if (response.startsWith("FILE UPLOADED SUCCESSFUL")) {
-                                statusLabel.setText(response);
-                            } else {
-                                statusLabel.setText("Upload status: " + response);
-                            }
-                            break;
-                        case "REG":
-                            statusLabel.setText(response);
-                            break;
-                        case "SHOW":
-                            statusLabel.setText(response);
-                            break;
-                        default:
-                            statusLabel.setText("Server response: " + response);
-                            break;
-                    }
-                });
-            } catch (IOException e) {
-                Platform.runLater(() -> statusLabel.setText("Command failed: " + e.getMessage()));
-            }
-        }).start();
-    }
+
 
     @FXML
     public void showRegistrationWindow() {
@@ -183,9 +158,10 @@ public class ClientController {
         }
     }
 
+
     @FXML
     private void browseFileNew() {
-        sendCommand("UP");
+        out.println("UP");
 
         FileChooser fileChooser = new FileChooser();
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("All Files (*.*)", "*.*");
@@ -197,8 +173,8 @@ public class ClientController {
             String filePath = file.getAbsolutePath();
             String fileName = file.getName();
             File uploadFile = new File(filePath);
-            System.out.println(fileName);
-            out.println(fileName);
+            System.out.println("up "+fileName);
+            out.println("up "+fileName);
 
             new Thread(() -> {
                 try (Socket dataSocket = new Socket(SERVER_NAME, DATA_PORT);
@@ -275,70 +251,50 @@ public class ClientController {
             }
         }).start();
     }
-
-    private void showProfile() {
-        try {
-            sendCommand("SHOW");
-            String response;
-            while ((response = in.readLine()) != null) {
-                if (response.contains("REQUIRED")) {
-                    Platform.runLater(() -> statusLabel.setText("Login required!"));
-                    return;
-                } else if (response.contains("User name: ")) {
-                    String userName = response.substring("User name: ".length());
-                    user_login.setUsername(userName);
-                } else if (response.contains("Email: ")) {
-                    String email = response.substring("Email: ".length());
-                    user_login.setEmail(email);
-                } else if (response.contains("Full name: ")) {
-                    String fullName = response.substring("Full name: ".length());
-                    user_login.setFullname(fullName);
-                } else if (response.contains("Activated time: ")) {
-                    String activatedtime = response.substring("Activated time: ".length());
-                    user_login.setDate_created(activatedtime);
-                } else if (response.contains("Anonymous account: ")) {
-                    String anonymous = response.substring("Anonymous account: ".length());
-                    user_login.setAnonymous(anonymous);
-                } else if (response.contains("Activated account: ")) {
-                    String activated = response.substring("Activated account: ".length());
-                    user_login.setActivated(activated);
-                } else if (response.contains("Blocked account: ")) {
-                    String blocked = response.substring("Blocked account: ".length());
-                    user_login.setBlocked(blocked);
-                } else if (response.contains("END_OF_INFO")) {
-                    break;
-                }
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     @FXML
-    private void showUserInfo() {
-        new Thread(() -> {
-            try {
+    private void showInfo(){
+        out.println("INFO");
+        if(user_login!= null){
+            unameProfilefield.setText(user_login.getUsername());
+            fullnamefield.setText(user_login.getFullname());
+            emailfield.setText(user_login.getEmail());
+            activefield.setText(user_login.getDate_created());
+            activatedfiled.setText(user_login.activatedToString());
+        }else {
+            Platform.runLater(()-> statusLabel.setText("No user logged in!"));
+        }
 
-                Platform.runLater(() -> {
-                    unameProfilefield.setText(user_login.getUsername());
-                    emailfield.setText(user_login.getEmail());
-                    fullnamefield.setText(user_login.getFullname());
-                    activefield.setText(user_login.getDate_created());
-                    anonymousfiled.setText(user_login.getAnonymous());
-                    activatedfiled.setText(user_login.getActivated());
-                    blockedfiled.setText(user_login.getBlocked());
-                });
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }).start();
+
+
+
     }
+    private void setFieldNull(){
+        unameProfilefield.setText("");
+        fullnamefield.setText("");
+        emailfield.setText("");
+        activefield.setText("");
+        activatedfiled.setText("");
+    }
+    @FXML
+    private void logOut() throws IOException {
+        out.println("OUT");
+        user_login = null;
+        String logOut_status = in.readLine();
+        Platform.runLater(()-> statusLabel.setText(logOut_status));
+        if(logOut_status.contains("See you again ")){
+            Platform.runLater(()-> setFieldNull());
+          
+        }
+
+    }
+
+
 
     @FXML
     private void showUserFile() {
         new Thread(() -> {
             try {
-                sendCommand("ls");
+                out.println("ls");
                 fileListFromServer = new ArrayList<>();
                 String responseList;
                 while ((responseList = in.readLine()) != null) {
@@ -367,5 +323,21 @@ public class ClientController {
 
     public void logout(ActionEvent actionEvent) {
         // Handle logout action
+    }
+    @FXML
+    public void showActiveWindow(ActionEvent actionEvent) {
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("otp-view.fxml"));
+            Parent root = fxmlLoader.load();
+
+            Stage registrationStage = new Stage();
+            registrationStage.setTitle("Register");
+            registrationStage.setScene(new Scene(root));
+            registrationStage.show();
+            out.println("OTP");
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

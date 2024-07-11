@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.ui.controller.OtpViewController"
+            prefHeight="10.0" prefWidth="300.0">
+
+    <children>
+        <VBox alignment="CENTER" spacing="10.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="75.0" AnchorPane.bottomAnchor="75.0">
+            <Label styleClass="field-label" text="Enter your OTP !" />
+            <TextField fx:id="otpField" prefWidth="20"/>
+            <Button fx:id="otpBtn" styleClass="action-button" text="Verify" onAction="#handleOtpButtonAction"/>
+            <Label styleClass="field-label" text="Please check your email !" />
+        </VBox>
+    </children>
+</AnchorPane>
