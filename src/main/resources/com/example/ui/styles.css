@@ -10,8 +10,9 @@
 
 }
 .textInfo{
-    -fx-font-size: 10px;
+    -fx-font-size: 20px;
     -fx-text-fill: black;
+    -fx-font-weight: bold;
 }
 .connect-button,  .register-button, .browse-button {
     -fx-background-color: #4CAF50; /* Green */
