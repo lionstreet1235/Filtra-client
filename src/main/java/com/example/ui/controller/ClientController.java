@@ -73,10 +73,15 @@ public class ClientController {
 
     @FXML
     private void connectToServer() {
+
         String server = serverField.getText();
         int port = Integer.parseInt(portField.getText());
         String username = usernameField.getText();
         String password = passwordField.getText();
+        if (username == null || username.isEmpty() || password == null || password.isEmpty()) {
+            Platform.runLater(() -> statusLabel.setText("Username and password are required"));
+            return;
+        }
 
         new Thread(() -> {
             try {
@@ -101,7 +106,6 @@ public class ClientController {
                 Gson gson = new Gson();
                 user_login = gson.fromJson(login_status, User.class);
 
-//                showProfile(); server chua code lai
 
             } catch (IOException e) {
                 Platform.runLater(() -> statusLabel.setText("Connection failed: " + e.getMessage()));
@@ -184,7 +188,12 @@ public class ClientController {
             fullnamefield.setText(user_login.getFullname());
             emailfield.setText(user_login.getEmail());
             activefield.setText(user_login.getDate_created());
-            activatedfiled.setText(user_login.activatedToString());
+            if(user_login.activatedToString().contains("true")){
+                activatedfiled.setText("Activated");
+            }else {
+                activatedfiled.setText("Not Activated");
+            }
+
         }else {
             Platform.runLater(()-> statusLabel.setText("No user logged in!"));
         }
@@ -224,14 +233,17 @@ public class ClientController {
     @FXML
     public void showActiveWindow(ActionEvent actionEvent) {
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("otp-view.fxml"));
-            Parent root = fxmlLoader.load();
+            if(user_login!=null){
+                FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("otp-view.fxml"));
+                Parent root = fxmlLoader.load();
 
-            Stage registrationStage = new Stage();
-            registrationStage.setTitle("Register");
-            registrationStage.setScene(new Scene(root));
-            registrationStage.show();
-            out.println("OTP");
+                Stage registrationStage = new Stage();
+                registrationStage.setTitle("Register");
+                registrationStage.setScene(new Scene(root));
+                registrationStage.show();
+                out.println("OTP");
+            }else Platform.runLater(()->statusLabel.setText("No user logged in!"));
+
 
         } catch (IOException e) {
             e.printStackTrace();
