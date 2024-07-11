@@ -17,7 +17,7 @@
             <Label styleClass="header-label" text="FTP Client" />
 
             <Button fx:id="helpButton" styleClass="toolbar-button" text="Trợ giúp" />
-            <Button fx:id="profileButton" styleClass="toolbar-button" text="Profile" onAction="#showUserInfo"/>
+            <Button fx:id="profileButton" styleClass="toolbar-button" onAction="#showInfo" text="Profile" />
             <Text> </Text>
 
 
@@ -97,19 +97,16 @@
                         <Label styleClass="field-label" text="Full name" />
                         <Text fx:id="fullnamefield" styleClass="textInfo" />
 
-                        <Label styleClass="field-label" text="Activated time" />
+                        <Label styleClass="field-label" text="Date created" />
                         <Text fx:id="activefield" styleClass="textInfo" />
-
-                        <Label styleClass="field-label" text="Anonymous account" />
-                        <Text fx:id="anonymousfiled" styleClass="textInfo" />
 
                         <Label styleClass="field-label" text="Activated account" />
                         <Text fx:id="activatedfiled" styleClass="textInfo" />
 
-                        <Label styleClass="field-label" text="Blocked account" />
-                        <Text fx:id="blockedfiled" styleClass="textInfo" />
 
-                        <Button fx:id="logoutButton" onAction="#logout" styleClass="action-button" text="Logout" />
+
+                        <Button fx:id="logoutButton" onAction="#logout" styleClass="action-button" onMouseClicked="#logOut" text="Logout"  />
+                        <Button text="Active" onAction="#showActiveWindow" defaultButton="true" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
                     </VBox>
 
                 </VBox>

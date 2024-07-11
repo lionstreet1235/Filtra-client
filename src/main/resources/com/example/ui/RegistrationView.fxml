@@ -33,6 +33,7 @@
             <PasswordField fx:id="confirmPasswordField" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
 
             <Button text="Register" onAction="#handleRegister" defaultButton="true" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+
         </children>
     </GridPane>
 </VBox>
