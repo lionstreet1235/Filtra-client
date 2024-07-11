@@ -13,12 +13,8 @@ import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import com.example.ui.model.User;
-
 import java.io.*;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
-
 public class ClientController {
 
     private static final String SERVER_NAME = "localhost";
@@ -30,44 +26,22 @@ public class ClientController {
     private static User user_login;
 
 
-    private List<String> fileListFromServer;
-
     @FXML
     private TextField serverField;
-
     @FXML
     private TextField portField;
-
     @FXML
     private TextField usernameField;
-
     @FXML
     private PasswordField passwordField;
-
     @FXML
     private Button connectButton;
-
     @FXML
     private Label statusLabel;
-
-    @FXML
-    private ListView<String> localFilesList;
-
-    @FXML
-    private ListView<String> remoteFilesList;
-
     @FXML
     private Button uploadButton;
-
     @FXML
     private Button downloadButton;
-
-    @FXML
-    private Button profileButton;
-
-    @FXML
-    private Button helpButton;
-
     @FXML
     private Button showFilesButton;
 
@@ -81,18 +55,13 @@ public class ClientController {
     @FXML
     private Text activefield;
     @FXML
-    private Text anonymousfiled;
-    @FXML
     private Text activatedfiled;
-    @FXML
-    private Text blockedfiled;
+
 
     @FXML
     private void initialize() throws IOException {
         connectButton.setOnAction(event -> connectToServer());
         uploadButton.setOnAction(event -> browseFileNew());
-//        profileButton.setOnAction(event -> showUserInfo());
-        helpButton.setOnAction(event -> showHelp());
         uploadButton.setDisable(false);
         downloadButton.setDisable(false);
         showFilesButton.setDisable(false);
@@ -104,10 +73,15 @@ public class ClientController {
 
     @FXML
     private void connectToServer() {
+
         String server = serverField.getText();
         int port = Integer.parseInt(portField.getText());
         String username = usernameField.getText();
         String password = passwordField.getText();
+        if (username == null || username.isEmpty() || password == null || password.isEmpty()) {
+            Platform.runLater(() -> statusLabel.setText("Username and password are required"));
+            return;
+        }
 
         new Thread(() -> {
             try {
@@ -132,7 +106,6 @@ public class ClientController {
                 Gson gson = new Gson();
                 user_login = gson.fromJson(login_status, User.class);
 
-//                showProfile(); server chua code lai
 
             } catch (IOException e) {
                 Platform.runLater(() -> statusLabel.setText("Connection failed: " + e.getMessage()));
@@ -161,8 +134,6 @@ public class ClientController {
 
     @FXML
     private void browseFileNew() {
-        out.println("UP");
-
         FileChooser fileChooser = new FileChooser();
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("All Files (*.*)", "*.*");
         fileChooser.getExtensionFilters().add(extFilter);
@@ -170,11 +141,13 @@ public class ClientController {
         File file = fileChooser.showOpenDialog(stage);
 
         if (file != null) {
-            String filePath = file.getAbsolutePath();
             String fileName = file.getName();
-            File uploadFile = new File(filePath);
-            System.out.println("up "+fileName);
-            out.println("up "+fileName);
+            File uploadFile = new File(file.getAbsolutePath());
+
+            synchronized (out) {
+                out.println("UP");
+                out.println("up " + fileName);
+            }
 
             new Thread(() -> {
                 try (Socket dataSocket = new Socket(SERVER_NAME, DATA_PORT);
@@ -187,70 +160,26 @@ public class ClientController {
                         dataOut.write(buffer, 0, bytesRead);
                     }
                     dataOut.flush();
-                    dataSocket.close();
 
-                    String response = in.readLine();
+                    // Ensure thread-safe access to in
+                    String response;
+                    synchronized (in) {
+                        response = in.readLine();
+                    }
+
                     if (response.startsWith("STARTING UPLOAD ...")) {
                         Platform.runLater(() -> statusLabel.setText("UPLOAD COMPLETE!"));
                     }
 
                 } catch (IOException e) {
-                    System.out.println(e.getMessage());
+                    System.out.println("File upload error: " + e.getMessage());
+                    Platform.runLater(() -> statusLabel.setText("UPLOAD FAILED!"));
                 }
             }).start();
         }
     }
 
-    @FXML
-    private void downloadFile() {
-        String selectedFile = remoteFilesList.getSelectionModel().getSelectedItem().substring(5).trim();
-        if (selectedFile == null) {
-            statusLabel.setText("No file selected!");
-            return;
-        }
 
-        new Thread(() -> {
-            try {
-                // Send "GET" command to the server with the selected file name
-                out.println("GET");
-                out.println(selectedFile);
-
-                String serverResponse = in.readLine();
-                if (serverResponse.contains("STARTING")) {
-                    FileChooser fileChooser = new FileChooser();
-                    fileChooser.setInitialFileName(selectedFile);
-                    Platform.runLater(() -> {
-                        Stage stage = (Stage) downloadButton.getScene().getWindow();
-                        File file = fileChooser.showSaveDialog(stage);
-
-                        if (file != null) {
-                            try (Socket dataSocket = new Socket(SERVER_NAME, DATA_PORT);
-                                 BufferedInputStream dataIn = new BufferedInputStream(dataSocket.getInputStream());
-                                 BufferedOutputStream fileOut = new BufferedOutputStream(new FileOutputStream(file))) {
-
-                                byte[] buffer = new byte[4096];
-                                int bytesRead;
-                                while ((bytesRead = dataIn.read(buffer)) != -1) {
-                                    fileOut.write(buffer, 0, bytesRead);
-                                }
-
-                                fileOut.flush();
-                                dataSocket.close();
-                                Platform.runLater(() -> statusLabel.setText("File downloaded successfully!"));
-
-                            } catch (IOException e) {
-                                Platform.runLater(() -> statusLabel.setText("Download failed: " + e.getMessage()));
-                            }
-                        }
-                    });
-                } else {
-                    Platform.runLater(() -> statusLabel.setText("Server response: " + serverResponse));
-                }
-            } catch (IOException e) {
-                Platform.runLater(() -> statusLabel.setText("Download failed: " + e.getMessage()));
-            }
-        }).start();
-    }
     @FXML
     private void showInfo(){
         out.println("INFO");
@@ -259,7 +188,12 @@ public class ClientController {
             fullnamefield.setText(user_login.getFullname());
             emailfield.setText(user_login.getEmail());
             activefield.setText(user_login.getDate_created());
-            activatedfiled.setText(user_login.activatedToString());
+            if(user_login.activatedToString().contains("true")){
+                activatedfiled.setText("Activated");
+            }else {
+                activatedfiled.setText("Not Activated");
+            }
+
         }else {
             Platform.runLater(()-> statusLabel.setText("No user logged in!"));
         }
@@ -292,49 +226,24 @@ public class ClientController {
 
     @FXML
     private void showUserFile() {
-        new Thread(() -> {
-            try {
-                out.println("ls");
-                fileListFromServer = new ArrayList<>();
-                String responseList;
-                while ((responseList = in.readLine()) != null) {
-                    if (responseList.equals("EXIT")) {
-                        break;
-                    }
-                    if (responseList.equals("REQUIRED")) {
-                        break;
-                    }
-                    fileListFromServer.add(responseList);
-                }
-                Platform.runLater(() -> receiveFileListFromServer(fileListFromServer));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }).start();
+
     }
 
-    private void receiveFileListFromServer(List<String> response) {
-        remoteFilesList.getItems().setAll(response);
-    }
 
-    private void showHelp() {
-        statusLabel.setText("Help button clicked!");
-    }
-
-    public void logout(ActionEvent actionEvent) {
-        // Handle logout action
-    }
     @FXML
     public void showActiveWindow(ActionEvent actionEvent) {
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("otp-view.fxml"));
-            Parent root = fxmlLoader.load();
+            if(user_login!=null){
+                FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("otp-view.fxml"));
+                Parent root = fxmlLoader.load();
 
-            Stage registrationStage = new Stage();
-            registrationStage.setTitle("Register");
-            registrationStage.setScene(new Scene(root));
-            registrationStage.show();
-            out.println("OTP");
+                Stage registrationStage = new Stage();
+                registrationStage.setTitle("Register");
+                registrationStage.setScene(new Scene(root));
+                registrationStage.show();
+                out.println("OTP");
+            }else Platform.runLater(()->statusLabel.setText("No user logged in!"));
+
 
         } catch (IOException e) {
             e.printStackTrace();

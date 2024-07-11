@@ -32,10 +32,10 @@
                     </padding>
                     <GridPane hgap="10" vgap="10">
                         <Label text="Server:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-                        <TextField fx:id="serverField" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                        <TextField fx:id="serverField"  text="localhost" GridPane.columnIndex="1" GridPane.rowIndex="0" />
 
                         <Label text="Port:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-                        <TextField fx:id="portField" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                        <TextField fx:id="portField" text="2100" GridPane.columnIndex="1" GridPane.rowIndex="1" />
 
                         <Label text="Username:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
                         <TextField fx:id="usernameField" GridPane.columnIndex="1" GridPane.rowIndex="2" />
@@ -76,7 +76,7 @@
                         <ListView fx:id="remoteFilesList" prefHeight="400" prefWidth="600" />
                     </VBox>
                     <VBox alignment="CENTER_LEFT" spacing="10">
-                        <Button fx:id="downloadButton" onAction="#downloadFile" styleClass="action-button" text="Download" />
+                        <Button fx:id="downloadButton"  styleClass="action-button" text="Download" />
                         <Button fx:id="uploadButton" onAction="#browseFileNew" styleClass="action-button" text="Upload" />
                         <Button fx:id="showFilesButton" onAction="#showUserFile" styleClass="action-button" text="Show Files" />
                     </VBox>
@@ -105,8 +105,8 @@
 
 
 
-                        <Button fx:id="logoutButton" onAction="#logout" styleClass="action-button" onMouseClicked="#logOut" text="Logout"  />
-                        <Button text="Active" onAction="#showActiveWindow" defaultButton="true" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+                        <Button fx:id="logoutButton" onAction="#logOut" styleClass="action-button" onMouseClicked="#logOut" text="Logout"  />
+                        <Button text="Active" styleClass="action-button" onAction="#showActiveWindow" />
                     </VBox>
 
                 </VBox>

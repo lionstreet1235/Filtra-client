@@ -10,8 +10,8 @@
 
 }
 .textInfo{
-    -fx-font-size: 20px;
-    -fx-text-fill: black;
+    -fx-font-size: 12px;
+    -fx-text-fill: purple;
     -fx-font-weight: bold;
 }
 .connect-button,  .register-button, .browse-button {

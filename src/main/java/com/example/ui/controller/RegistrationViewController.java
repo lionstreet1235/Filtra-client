@@ -40,8 +40,6 @@
             String email = emailField.getText();
             String password = passwordField.getText();
             String confirmPassword = confirmPasswordField.getText();
-
-            // Enhanced Input Validation
             if (fullName.isEmpty() || username.isEmpty() || email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
                 showAlert("Error", "Please fill in all fields.");
                 return;
@@ -51,20 +49,15 @@
                 showAlert("Error", "Passwords do not match.");
                 return;
             }
-
-            // Email format validation (add more robust validation if needed)
             if (!email.matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")) {
                 showAlert("Error", "Invalid email format.");
                 return;
             }
-
             try (Socket registrationSocket = new Socket(SERVER_NAME, CONTROL_PORT);
                  PrintWriter out = new PrintWriter(registrationSocket.getOutputStream(), true);
                  BufferedReader in = new BufferedReader(new InputStreamReader(registrationSocket.getInputStream()))) {
 
-
-
-                out.println("REG"); // Registration command
+                out.println("REG");
                 String registerStatus = in.readLine();
                 if (registerStatus.contains("logout")) {
                     Platform.runLater(()->{showAlert("Failure", "Please logout first!");});
@@ -74,8 +67,6 @@
                 user = new User(UUID.randomUUID().toString(), fullName, username, email, password, LocalDateTime.now().toString(), true, false, 2);
                 out.println(gson.toJson(user));
 
-
-                // Get the server's response
                 Platform.runLater(() -> {
                     Platform.runLater(()->{showAlert("Success", registerStatus);});
 
@@ -87,7 +78,6 @@
                 Platform.runLater(() -> showAlert("Error", "Registration failed: " + e.getMessage()));
             }
 
-            // Close the registration window after registration or error
             Stage stage = (Stage) registerButton.getScene().getWindow();
             stage.close();
         }
