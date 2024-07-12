@@ -145,8 +145,8 @@ public class ClientController {
             File uploadFile = new File(file.getAbsolutePath());
 
             synchronized (out) {
-                out.println("UP");
                 out.println("up " + fileName);
+                out.flush();
             }
 
             new Thread(() -> {
@@ -160,14 +160,12 @@ public class ClientController {
                         dataOut.write(buffer, 0, bytesRead);
                     }
                     dataOut.flush();
-
-                    // Ensure thread-safe access to in
                     String response;
                     synchronized (in) {
                         response = in.readLine();
                     }
 
-                    if (response.startsWith("STARTING UPLOAD ...")) {
+                    if (response.contains("Uploading ... > ")) {
                         Platform.runLater(() -> statusLabel.setText("UPLOAD COMPLETE!"));
                     }
 
