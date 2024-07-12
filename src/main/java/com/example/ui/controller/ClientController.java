@@ -182,6 +182,53 @@ public class ClientController {
             }).start();
         }
     }
+    @FXML
+    private void downloadFile() {
+        showUserFile();
+        String selectedFile = (String) remoteFilesList.getSelectionModel().getSelectedItem();
+
+        if (selectedFile == null) {
+            Platform.runLater(() -> statusLabel.setText("Please select a file to download."));
+            return;
+        }
+
+        new Thread(() -> {
+            synchronized (out) {
+                String downloaFile = selectedFile.substring(3);
+                out.println("get " + downloaFile);
+                out.flush();
+            }
+
+            Platform.runLater(() -> {
+                FileChooser fileChooser = new FileChooser();
+                fileChooser.setInitialFileName(selectedFile.substring(3));
+                Stage stage = (Stage) downloadButton.getScene().getWindow();
+                File file = fileChooser.showSaveDialog(stage);
+
+                if (file != null) {
+                    new Thread(() -> {
+                        try (Socket dataSocket = new Socket(SERVER_NAME, DATA_PORT);
+                             BufferedInputStream dataIn = new BufferedInputStream(dataSocket.getInputStream());
+                             BufferedOutputStream fileOut = new BufferedOutputStream(new FileOutputStream(file))) {
+
+                            byte[] buffer = new byte[4096];
+                            int bytesRead;
+                            while ((bytesRead = dataIn.read(buffer)) != -1) {
+                                fileOut.write(buffer, 0, bytesRead);
+                            }
+                            fileOut.flush();
+                            Platform.runLater(() -> statusLabel.setText("DOWNLOAD COMPLETE!"));
+                        } catch (IOException e) {
+                            System.out.println("File download error: " + e.getMessage());
+                            Platform.runLater(() -> statusLabel.setText("DOWNLOAD FAILED!"));
+                        }
+                    }).start();
+                }
+            });
+        }).start();
+    }
+
+
 
 
     @FXML
