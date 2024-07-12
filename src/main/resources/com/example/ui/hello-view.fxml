@@ -76,7 +76,7 @@
                         <ListView fx:id="remoteFilesList" prefHeight="400" prefWidth="600" />
                     </VBox>
                     <VBox alignment="CENTER_LEFT" spacing="10">
-                        <Button fx:id="downloadButton"  styleClass="action-button" text="Download" />
+                        <Button fx:id="downloadButton"  styleClass="action-button" text="Download" onAction="#downloadFile"/>
                         <Button fx:id="uploadButton" onAction="#browseFileNew" styleClass="action-button" text="Upload" />
                         <Button fx:id="showFilesButton" onAction="#showUserFile" styleClass="action-button" text="Show Files" />
                     </VBox>
