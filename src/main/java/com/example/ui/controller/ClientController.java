@@ -15,15 +15,21 @@ import javafx.stage.Stage;
 import com.example.ui.model.User;
 import java.io.*;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
+
 public class ClientController {
 
     private static final String SERVER_NAME = "localhost";
     private static final int DATA_PORT = 2000;
     private static final int CONTROL_PORT = 2100;
     public static Socket controlSocket = null;
+    public ListView remoteFilesList;
     private BufferedReader in = null;
     private PrintWriter out = null;
     private static User user_login;
+
+
 
 
     @FXML
@@ -131,7 +137,7 @@ public class ClientController {
         }
     }
 
-
+    //controller upload
     @FXML
     private void browseFileNew() {
         FileChooser fileChooser = new FileChooser();
@@ -225,8 +231,33 @@ public class ClientController {
     @FXML
     private void showUserFile() {
 
+            try {
+                out.println("LS");
+                List<String> fileList = new ArrayList<>();
+                String response_LS;
+                while ((response_LS = in.readLine()) != null) {
+                    if (response_LS.contains("Login")) {
+                        System.out.println(response_LS);
+                        break;
+                    }
+                    if (response_LS.equals("END")) {
+                        break;
+                    }
+                    fileList.add(response_LS);
+                }
+                out.flush();
+                Platform.runLater(() -> updateRemoteFilesList(fileList));
+            } catch (IOException e) {
+                Platform.runLater(() -> {
+                    throw new RuntimeException(e);
+                });
+            }
     }
 
+    private void updateRemoteFilesList(List<String> fileList) {
+        remoteFilesList.getItems().clear();
+        remoteFilesList.getItems().addAll(fileList);
+    }
 
     @FXML
     public void showActiveWindow(ActionEvent actionEvent) {
