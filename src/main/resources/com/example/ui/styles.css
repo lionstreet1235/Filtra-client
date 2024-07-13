@@ -1,32 +1,42 @@
+.root {
+    -fx-background-image: url(https://firebasestorage.googleapis.com/v0/b/fastdeli-5cee0.appspot.com/o/Newback.png?alt=media&token=86efe4db-e811-4908-ab6c-75cdd70af796); /* Đường dẫn đến ảnh nền */
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: cover;
+    -fx-background-position: center center;
+}
+
 .header-label {
     -fx-font-size: 24px;
     -fx-font-weight: bold;
     -fx-text-fill: black; /* Change text color to black */
 }
-.field-label{
+
+.field-label {
     -fx-font-size: 15px;
     -fx-font-weight: bold;
     -fx-text-fill: black; /* Change text color to black */
-
 }
-.textInfo{
+
+.textInfo {
     -fx-font-size: 12px;
     -fx-text-fill: purple;
     -fx-font-weight: bold;
 }
-.connect-button,  .register-button, .browse-button {
+
+.connect-button, .register-button, .browse-button {
     -fx-background-color: #4CAF50; /* Green */
     -fx-text-fill: white;
     -fx-font-size: 14px;
     -fx-padding: 10 20 10 20;
 }
-.action-button{
+
+.action-button {
     -fx-background-color: #4CAF50; /* Green */
     -fx-text-fill: white;
     -fx-font-size: 14px;
-    -fx-padding: 10 20 10 20
-
+    -fx-padding: 10 20 10 20;
 }
+
 .status-label {
     -fx-font-size: 18px;
     -fx-text-fill: red;
@@ -35,7 +45,6 @@
 .section-label {
     -fx-font-size: 18px;
     -fx-font-weight: bold;
-
 }
 
 .toolbar-button {
@@ -46,7 +55,7 @@
     -fx-border-radius: 5;
     -fx-background-radius: 5;
 }
-.logo-huflit{
+
+.logo-huflit {
     -fx-padding: 20 5 10 15;
 }
-

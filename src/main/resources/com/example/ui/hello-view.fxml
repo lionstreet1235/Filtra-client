@@ -59,11 +59,6 @@
                      <RowConstraints />
                   </rowConstraints>
                     </GridPane>
-                    <ImageView fx:id="logoImageView" fitHeight="150" fitWidth="200" styleClass="logo-huflit">
-                        <image>
-                            <Image url="https://firebasestorage.googleapis.com/v0/b/fastdeli-5cee0.appspot.com/o/logo.png?alt=media&amp;token=9579b645-903d-4c20-ad4b-7f7a47c3f0d2" />
-                        </image>
-                    </ImageView>
                 </VBox>
             </Tab>
             <Tab text="Files" >
