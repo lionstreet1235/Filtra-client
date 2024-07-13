@@ -9,15 +9,10 @@
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.example.ui.controller.MakeDirController"
-            prefHeight="150.0" prefWidth="300">
-    <VBox alignment="CENTER">
-        <VBox spacing="10" alignment="CENTER" >
-            <Label styleClass="field-label" text="Enter your Directory name" />
-            <TextField fx:id="dirTextField"  />
-            <Button fx:id="createDirButton" styleClass="action-button" text="Create" onAction="#makeDir"/>
-        </VBox>
+            prefHeight="150.0" prefWidth="300.0">
+    <VBox alignment="CENTER" spacing="20.0" layoutX="50.0" layoutY="20.0">
+        <Label styleClass="field-label" text="Enter your Directory name" />
+        <TextField fx:id="dirTextField" prefWidth="200.0" />
+        <Button fx:id="createDirButton" styleClass="action-button" text="Create" onAction="#makeDir"/>
     </VBox>
-
-
-
 </AnchorPane>
