@@ -25,6 +25,7 @@ public class ClientController {
     private static final int CONTROL_PORT = 2100;
     public static Socket controlSocket = null;
     public ListView remoteFilesList;
+
     private BufferedReader in = null;
     private PrintWriter out = null;
     private static User user_login;
@@ -62,6 +63,10 @@ public class ClientController {
     private Text activefield;
     @FXML
     private Text activatedfiled;
+
+    // Make dir view
+    @FXML
+    private Button makeDirButton;
 
 
     @FXML
@@ -159,6 +164,7 @@ public class ClientController {
 
 
 
+
             new Thread(() -> {
                 try (Socket dataSocket = new Socket(SERVER_NAME, DATA_PORT);
                      BufferedInputStream fileIn = new BufferedInputStream(new FileInputStream(uploadFile));
@@ -169,7 +175,8 @@ public class ClientController {
                     while ((bytesRead = fileIn.read(buffer)) != -1) {
                         dataOut.write(buffer, 0, bytesRead);
                     }
-                    dataOut.flush();
+                    out.flush();
+                    dataSocket.close();
                     String response;
                     response = in.readLine();
 
@@ -271,6 +278,7 @@ public class ClientController {
         Platform.runLater(()-> statusLabel.setText(logOut_status));
         if(logOut_status.contains("See you again ")) {
             Platform.runLater(this::setFieldNull);
+            Platform.runLater(()-> remoteFilesList = null);
         }
 
     }
@@ -326,5 +334,24 @@ public class ClientController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    @FXML
+    private void showMakeDirForm(ActionEvent actionEvent){
+        try{
+            if(user_login!=null){
+                FXMLLoader fxmloader = new FXMLLoader(HelloApplication.class.getResource("make-dir.fxml"));
+                Parent root = fxmloader.load();
+
+                Stage mkDirStage = new Stage();
+                mkDirStage.setTitle("MakeDirectory");
+                mkDirStage.setScene(new Scene(root));
+                mkDirStage.show();
+
+
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 }
