@@ -3,12 +3,17 @@ package com.example.ui.controller;
 import com.example.ui.HelloApplication;
 import com.google.gson.Gson;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -313,7 +318,41 @@ public class ClientController {
 
     private void updateRemoteFilesList(List<String> fileList) {
         remoteFilesList.getItems().clear();
-        remoteFilesList.getItems().addAll(fileList);
+        ObservableList<HBox> items = FXCollections.observableArrayList();
+        for (String file : fileList) {
+            HBox hBox = new HBox();
+            ImageView icon = new ImageView();
+            String iconPath = "";
+
+            if (file.startsWith("D")) {
+                iconPath = "/image/File_Explorer.png";
+
+            } else if (file.startsWith("F")) {
+                iconPath = "/image/Document.png";
+            }
+
+            try {
+                Image image = new Image(getClass().getResourceAsStream(iconPath));
+                icon.setImage(image);
+                icon.setFitWidth(24);
+                icon.setFitHeight(24);
+                icon.setPreserveRatio(true);
+            } catch (NullPointerException e) {
+                System.err.println("Không thể tìm thấy hình ảnh: " + iconPath);
+
+                icon.setImage(new Image(getClass().getResourceAsStream("/images/default.png")));
+                icon.setFitWidth(24);
+                icon.setFitHeight(24);
+                icon.setPreserveRatio(true);
+            }
+
+            // Tạo Label mà không có ký tự (F: hoặc D:)
+            Label label = new Label(file.substring(1));
+            hBox.getChildren().addAll(icon, label);
+            items.add(hBox);
+        }
+        remoteFilesList.setItems(items);
+
     }
 
     @FXML
