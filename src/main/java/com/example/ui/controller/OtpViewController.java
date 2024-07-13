@@ -32,6 +32,7 @@ public class OtpViewController {
             if (activateStatus.contains("nope")) {
                 String otp = otpField.getText();
                 out.println(otp);
+                out.flush();
                 String otpStatus = in.readLine();
                 Platform.runLater(() -> {showAlert("ActiveStatus",otpStatus);});
             }
