@@ -2,6 +2,16 @@ package com.example.ui.model;
 
 public class User
 {
+    private String id;
+    private String fullname;
+    private String username;
+    private String email;
+    private String password;
+    private final String date_created;
+    private boolean anonymous;
+    private boolean activated;
+    private long max_size;
+
     public String getId()
     {
         return id;
@@ -12,16 +22,15 @@ public class User
         this.id = id;
     }
 
-    private String id;
-    private String fullname;
-    private String username;
-    private String email;
-    private String password;
-    private final String date_created;
-    private boolean anonymous;
-    private boolean activated;
-    private boolean blocked;
-    private int id_role;
+    public long getMax_size()
+    {
+        return max_size;
+    }
+
+    public void setMax_size(long max_size)
+    {
+        this.max_size = max_size;
+    }
 
     public String getDate_created()
     {
@@ -36,26 +45,6 @@ public class User
     public void setActivated(boolean activated)
     {
         this.activated = activated;
-    }
-
-    public boolean isBlocked()
-    {
-        return blocked;
-    }
-
-    public void setBlocked(boolean blocked)
-    {
-        this.blocked = blocked;
-    }
-
-    public int getId_role()
-    {
-        return id_role;
-    }
-
-    public void setId_role(int id_role)
-    {
-        this.id_role = id_role;
     }
 
     public boolean isAnonymous()
@@ -109,7 +98,7 @@ public class User
     }
 
 
-    public User(String id, String fullname, String username, String email, String password, String date_created, boolean anonymous, boolean activated, int id_role)
+    public User(String id, String fullname, String username, String email, String password, String date_created, boolean anonymous, boolean activated, long max_size)
     {
         this.id = id;
         this.fullname = fullname;
@@ -119,7 +108,7 @@ public class User
         this.date_created = date_created;
         this.anonymous = anonymous;
         this.activated = activated;
-        this.id_role = id_role;
+        this.max_size = max_size;
     }
 
     public String toString()
@@ -127,10 +116,15 @@ public class User
         return "fullname: " + this.fullname + "\n"
                 + "username: " + this.username + "\n"
                 + "email: " + this.email + "\n"
-                + "datecreate: " + this.date_created + "\n";
+                + "date created: " + this.date_created + "\n"
+                + "activated status: " + this.activated + "\n"
+                + "max data: " + this.max_size / Math.pow(1024, 2) + "MB";
     }
     public String activatedToString()
     {
         return String.valueOf(this.activated);
     }
 }
+
+
+

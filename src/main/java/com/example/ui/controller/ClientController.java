@@ -107,10 +107,14 @@ public class ClientController {
                 out.println(password);
                 String login_status = in.readLine();
                 if(response.contains("-- LOGIN --")) {
-                    Platform.runLater(() -> statusLabel.setText("Loggin successful!"));
+                    Platform.runLater(() -> statusLabel.setText("Login successful!"));
                 }
                 Gson gson = new Gson();
                 user_login = gson.fromJson(login_status, User.class);
+//                if (remoteFilesList.hasProperties()){
+//                    showUserFile();
+//                }
+
 
 
             } catch (IOException e) {
@@ -150,10 +154,10 @@ public class ClientController {
             String fileName = file.getName();
             File uploadFile = new File(file.getAbsolutePath());
 
-            synchronized (out) {
-                out.println("up " + fileName);
-                out.flush();
-            }
+            out.println("up " + fileName);
+            out.println(uploadFile.length());
+
+
 
             new Thread(() -> {
                 try (Socket dataSocket = new Socket(SERVER_NAME, DATA_PORT);
@@ -167,9 +171,8 @@ public class ClientController {
                     }
                     dataOut.flush();
                     String response;
-                    synchronized (in) {
-                        response = in.readLine();
-                    }
+                    response = in.readLine();
+
 
                     if (response.contains("Uploading ... > ")) {
                         Platform.runLater(() -> statusLabel.setText("UPLOAD COMPLETE!"));
@@ -184,7 +187,7 @@ public class ClientController {
     }
     @FXML
     private void downloadFile() {
-        showUserFile();
+
         String selectedFile = (String) remoteFilesList.getSelectionModel().getSelectedItem();
 
         if (selectedFile == null) {
@@ -266,9 +269,8 @@ public class ClientController {
         user_login = null;
         String logOut_status = in.readLine();
         Platform.runLater(()-> statusLabel.setText(logOut_status));
-        if(logOut_status.contains("See you again ")){
-            Platform.runLater(()-> setFieldNull());
-          
+        if(logOut_status.contains("See you again ")) {
+            Platform.runLater(this::setFieldNull);
         }
 
     }
