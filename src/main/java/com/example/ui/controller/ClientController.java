@@ -21,6 +21,7 @@ import com.example.ui.model.User;
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class ClientController {
@@ -30,6 +31,8 @@ public class ClientController {
     private static final int CONTROL_PORT = 2100;
     public static Socket controlSocket = null;
     public ListView remoteFilesList;
+    public ListView sharedFilesList;
+
 
     private BufferedReader in = null;
     private PrintWriter out = null;
@@ -284,6 +287,7 @@ public class ClientController {
         if(logOut_status.contains("See you again ")) {
             Platform.runLater(this::setFieldNull);
             Platform.runLater(()-> remoteFilesList = null);
+            Platform.runLater(this::showUserFile);
         }
 
     }
@@ -308,7 +312,12 @@ public class ClientController {
                     fileList.add(response_LS);
                 }
                 out.flush();
-                Platform.runLater(() -> updateRemoteFilesList(fileList));
+                if(user_login != null){
+                    Platform.runLater(() -> updateRemoteFilesList(fileList));
+                }else {
+                    Platform.runLater(()-> statusLabel.setText("No user logged in!"));
+                }
+
             } catch (IOException e) {
                 Platform.runLater(() -> {
                     throw new RuntimeException(e);
@@ -354,6 +363,70 @@ public class ClientController {
         remoteFilesList.setItems(items);
 
     }
+    @FXML
+    private void showSharedFiles() throws IOException {
+        out.println("LSHR");
+        List<String> fileList = new ArrayList<>();
+        String status = in.readLine();
+        System.out.println(status);
+        if (status.contains("Login")) {
+            return;
+        }
+
+        Gson gson = new Gson();
+        String[] list_file = gson.fromJson(in.readLine(), String[].class);
+        String[] list_dir = gson.fromJson(in.readLine(), String[].class);
+
+        for (String dir : list_dir) {
+            fileList.add(dir);
+        }
+        for (String file : list_file) {
+            fileList.add(file);
+        }
+
+        // Cập nhật danh sách tệp chia sẻ trên giao diện người dùng
+        Platform.runLater(() -> updateSharedFilesList(fileList));
+    }
+
+    private void updateSharedFilesList(List<String> fileList) {
+        sharedFilesList.getItems().clear();
+        ObservableList<HBox> items = FXCollections.observableArrayList();
+        for (String file : fileList) {
+            HBox hBox = new HBox();
+            ImageView icon = new ImageView();
+            String iconPath = "";
+
+            if (file.startsWith("D")) {
+                iconPath = "/image/File_Explorer.png";
+            } else if (file.startsWith("F")) {
+                iconPath = "/image/Document.png";
+            }
+
+            try {
+                InputStream iconStream = getClass().getResourceAsStream(iconPath);
+                if (iconStream == null) {
+                    throw new NullPointerException("Không thể tìm thấy hình ảnh: " + iconPath);
+                }
+                Image image = new Image(iconStream);
+                icon.setImage(image);
+            } catch (NullPointerException e) {
+                System.err.println(e.getMessage());
+                icon.setImage(new Image(getClass().getResourceAsStream("/images/default.png")));
+            }
+
+            icon.setFitWidth(24);
+            icon.setFitHeight(24);
+            icon.setPreserveRatio(true);
+
+            // Tạo Label mà không có ký tự (F: hoặc D:)
+            Label label = new Label(file.substring(1));
+            hBox.getChildren().addAll(icon, label);
+            items.add(hBox);
+        }
+        sharedFilesList.setItems(items);
+    }
+
+
 
     @FXML
     public void showActiveWindow(ActionEvent actionEvent) {
