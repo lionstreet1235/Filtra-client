@@ -79,6 +79,7 @@
                         <Button fx:id="downloadButton"  styleClass="action-button" text="Download" onAction="#downloadFile"/>
                         <Button fx:id="uploadButton" onAction="#browseFileNew" styleClass="action-button" text="Upload" />
                         <Button fx:id="showFilesButton" onAction="#showUserFile" styleClass="action-button" text="Show Files" />
+                        <Button fx:id="makeDirButton" styleClass="action-button"  text="MakeDir" onAction="#showMakeDirForm"/>
                     </VBox>
                 </HBox>
             </Tab>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.ui.controller.MakeDirController"
+            prefHeight="150.0" prefWidth="300">
+    <VBox alignment="CENTER">
+        <VBox spacing="10" alignment="CENTER" >
+            <Label styleClass="field-label" text="Enter your Directory name" />
+            <TextField fx:id="dirTextField"  />
+            <Button fx:id="createDirButton" styleClass="action-button" text="Create" onAction="#makeDir"/>
+        </VBox>
+    </VBox>
+
+
+
+</AnchorPane>
