@@ -213,24 +213,25 @@ public class ClientController {
     }
     @FXML
     private void downloadFile() {
+        HBox selectedItem = (HBox) remoteFilesList.getSelectionModel().getSelectedItem();
 
-        String selectedFile = (String) remoteFilesList.getSelectionModel().getSelectedItem();
-
-        if (selectedFile == null) {
+        if (selectedItem == null) {
             Platform.runLater(() -> statusLabel.setText("Please select a file to download."));
             return;
         }
 
+        Label label = (Label) selectedItem.getChildren().get(1); // assuming label is the second child in HBox
+        String selectedFile = label.getText().substring(1).trim();
         new Thread(() -> {
             synchronized (out) {
-                String downloaFile = selectedFile.substring(3);
+                String downloaFile = selectedFile;
                 out.println("get " + downloaFile);
                 out.flush();
             }
 
             Platform.runLater(() -> {
                 FileChooser fileChooser = new FileChooser();
-                fileChooser.setInitialFileName(selectedFile.substring(3));
+                fileChooser.setInitialFileName(selectedFile);
                 Stage stage = (Stage) downloadButton.getScene().getWindow();
                 File file = fileChooser.showSaveDialog(stage);
 
@@ -256,6 +257,7 @@ public class ClientController {
             });
         }).start();
     }
+
 
 
 
