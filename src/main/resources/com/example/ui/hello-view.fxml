@@ -31,36 +31,70 @@
                         <Insets bottom="10" left="10" right="10" top="10" />
                     </padding>
                     <GridPane hgap="10" vgap="10">
-                        <Label text="Server:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-                        <TextField fx:id="serverField"  text="localhost" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                        <HBox spacing="5" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                            <ImageView fitWidth="20" fitHeight="20">
+                                <image>
+                                    <Image url="@image_connection/server.png" />
+                                </image>
+                            </ImageView>
+                            <Label text="Server:" />
+                        </HBox>
+                        <TextField fx:id="serverField" text="localhost" GridPane.columnIndex="1" GridPane.rowIndex="0" />
 
-                        <Label text="Port:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                        <HBox spacing="5" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                            <ImageView fitWidth="20" fitHeight="20">
+                                <image>
+                                    <Image url="@image_connection/gate.png" />
+                                </image>
+                            </ImageView>
+                            <Label text="Port:" />
+                        </HBox>
                         <TextField fx:id="portField" text="2100" GridPane.columnIndex="1" GridPane.rowIndex="1" />
 
-                        <Label text="Username:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                        <HBox spacing="5" GridPane.columnIndex="0" GridPane.rowIndex="2">
+                            <ImageView fitWidth="20" fitHeight="20">
+                                <image>
+                                    <Image url="@image_connection/user.png" />
+                                </image>
+                            </ImageView>
+                            <Label text="Username:" />
+                        </HBox>
                         <TextField fx:id="usernameField" GridPane.columnIndex="1" GridPane.rowIndex="2" />
 
-                        <Label text="Password:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+                        <HBox spacing="5" GridPane.columnIndex="0" GridPane.rowIndex="3">
+                            <ImageView fitWidth="20" fitHeight="20">
+                                <image>
+                                    <Image url="@image_connection/password.png" />
+                                </image>
+                            </ImageView>
+                            <Label text="Password:" />
+                        </HBox>
                         <PasswordField fx:id="passwordField" GridPane.columnIndex="1" GridPane.rowIndex="3" />
 
                         <HBox spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="4">
                             <Button fx:id="connectButton" onAction="#connectToServer" styleClass="connect-button" text="Connect" />
                             <Button fx:id="registerButton" onAction="#showRegistrationWindow" styleClass="register-button" text="Register" />
                         </HBox>
-                  <columnConstraints>
-                     <ColumnConstraints />
-                     <ColumnConstraints />
-                  </columnConstraints>
-                  <rowConstraints>
-                     <RowConstraints />
-                     <RowConstraints />
-                     <RowConstraints />
-                     <RowConstraints />
-                     <RowConstraints />
-                  </rowConstraints>
+
+                        <columnConstraints>
+                            <ColumnConstraints />
+                            <ColumnConstraints />
+                        </columnConstraints>
+                        <rowConstraints>
+                            <RowConstraints />
+                            <RowConstraints />
+                            <RowConstraints />
+                            <RowConstraints />
+                            <RowConstraints />
+                        </rowConstraints>
                     </GridPane>
                 </VBox>
             </Tab>
+
+
+
+
+
             <Tab text="Files" >
                 <HBox spacing="10">
                     <padding>

@@ -5,9 +5,12 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
+<?import javafx.scene.image.Image?>
 <VBox alignment="CENTER" spacing="10" xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.example.ui.controller.RegistrationViewController">
@@ -17,19 +20,64 @@
 
     <GridPane hgap="10" vgap="10">
         <children>
-            <Label text="Full Name:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+            <HBox spacing="5" GridPane.rowIndex="0" GridPane.columnIndex="0">
+                <children>
+                    <ImageView fitHeight="16" fitWidth="16" pickOnBounds="true" preserveRatio="true">
+                        <image>
+                            <Image url="@image_register/identity.png"/>
+                        </image>
+                    </ImageView>
+                    <Label text="Full Name:"/>
+                </children>
+            </HBox>
             <TextField fx:id="fullNameField" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
 
-            <Label text="Username:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+            <HBox spacing="5" GridPane.rowIndex="1" GridPane.columnIndex="0">
+                <children>
+                    <ImageView fitHeight="16" fitWidth="16" pickOnBounds="true" preserveRatio="true">
+                        <image>
+                            <Image url="@image_register/user.png"/>
+                        </image>
+                    </ImageView>
+                    <Label text="Username:"/>
+                </children>
+            </HBox>
             <TextField fx:id="usernameField" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
 
-            <Label text="Email:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+            <HBox spacing="5" GridPane.rowIndex="2" GridPane.columnIndex="0">
+                <children>
+                    <ImageView fitHeight="16" fitWidth="16" pickOnBounds="true" preserveRatio="true">
+                        <image>
+                            <Image url="@image_register/communication.png"/>
+                        </image>
+                    </ImageView>
+                    <Label text="Email:"/>
+                </children>
+            </HBox>
             <TextField fx:id="emailField" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
 
-            <Label text="Password:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+            <HBox spacing="5" GridPane.rowIndex="3" GridPane.columnIndex="0">
+                <children>
+                    <ImageView fitHeight="16" fitWidth="16" pickOnBounds="true" preserveRatio="true">
+                        <image>
+                            <Image url="@image_register/password.png"/>
+                        </image>
+                    </ImageView>
+                    <Label text="Password:"/>
+                </children>
+            </HBox>
             <PasswordField fx:id="passwordField" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
 
-            <Label text="Confirm Password:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+            <HBox spacing="5" GridPane.rowIndex="4" GridPane.columnIndex="0">
+                <children>
+                    <ImageView fitHeight="16" fitWidth="16" pickOnBounds="true" preserveRatio="true">
+                        <image>
+                            <Image url="@image_register/password.png"/>
+                        </image>
+                    </ImageView>
+                    <Label text="Confirm Password:"/>
+                </children>
+            </HBox>
             <PasswordField fx:id="confirmPasswordField" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
 
             <Button text="Register" onAction="#handleRegister" defaultButton="true" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
