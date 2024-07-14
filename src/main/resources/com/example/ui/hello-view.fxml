@@ -94,26 +94,40 @@
                         <Insets bottom="10" left="10" right="10" top="10" />
                     </padding>
                     <VBox alignment="TOP_LEFT" spacing="10">
-                        <Label styleClass="field-label" text="User name" />
+                        <HBox spacing="5" alignment="CENTER_LEFT">
+                            <ImageView fx:id="usernameIcon" fitHeight="20" fitWidth="20"/>
+                            <Label styleClass="field-label" text="User name" />
+                        </HBox>
                         <Text fx:id="unameProfilefield" styleClass="textInfo" />
 
-                        <Label styleClass="field-label" text="Email" />
-                        <Text fx:id="emailfield" styleClass="textInfo"  />
+                        <HBox spacing="5" alignment="CENTER_LEFT">
+                            <ImageView fx:id="emailIcon" fitHeight="20" fitWidth="20"/>
+                            <Label styleClass="field-label" text="Email" />
+                        </HBox>
+                        <Text fx:id="emailfield" styleClass="textInfo" />
 
-                        <Label styleClass="field-label" text="Full name" />
+                        <HBox spacing="5" alignment="CENTER_LEFT">
+                            <ImageView fx:id="fullnameIcon" fitHeight="20" fitWidth="20"/>
+                            <Label styleClass="field-label" text="Full name" />
+                        </HBox>
                         <Text fx:id="fullnamefield" styleClass="textInfo" />
 
-                        <Label styleClass="field-label" text="Date created" />
+                        <HBox spacing="5" alignment="CENTER_LEFT">
+                            <ImageView fx:id="dateCreatedIcon" fitHeight="20" fitWidth="20"/>
+                            <Label styleClass="field-label" text="Date created" />
+                        </HBox>
                         <Text fx:id="activefield" styleClass="textInfo" />
 
-                        <Label styleClass="field-label" text="Activated account" />
+                        <HBox spacing="5" alignment="CENTER_LEFT">
+                            <ImageView fx:id="activatedIcon" fitHeight="20" fitWidth="20"/>
+                            <Label styleClass="field-label" text="Activated account" />
+                        </HBox>
                         <Text fx:id="activatedfiled" styleClass="textInfo" />
-
-
 
                         <Button fx:id="logoutButton" onAction="#logOut" styleClass="action-button" onMouseClicked="#logOut" text="Logout"  />
                         <Button text="Active" styleClass="action-button" onAction="#showActiveWindow" />
                     </VBox>
+
 
                 </VBox>
             </Tab>
