@@ -71,6 +71,16 @@ public class ClientController {
     private Text activefield;
     @FXML
     private Text activatedfiled;
+    @FXML
+    private ImageView usernameIcon;
+    @FXML
+    private ImageView fullnameIcon;
+    @FXML
+    private ImageView emailIcon;
+    @FXML
+    private ImageView dateCreatedIcon;
+    @FXML
+    private ImageView activatedIcon;
 
     // Make dir view
     @FXML
@@ -87,6 +97,7 @@ public class ClientController {
         controlSocket = new Socket(SERVER_NAME, CONTROL_PORT);
         in = new BufferedReader(new InputStreamReader(controlSocket.getInputStream()));
         out = new PrintWriter(controlSocket.getOutputStream(), true);
+
 
     }
 
@@ -262,6 +273,12 @@ public class ClientController {
             }else {
                 activatedfiled.setText("Not Activated");
             }
+            // Icon cho show profile
+            usernameIcon.setImage(new Image(getClass().getResourceAsStream("/image/user.png")));
+            fullnameIcon.setImage(new Image(getClass().getResourceAsStream("/image/identity.png")));
+            emailIcon.setImage(new Image(getClass().getResourceAsStream("/image/communication.png")));
+            dateCreatedIcon.setImage(new Image(getClass().getResourceAsStream("/image/timetable.png")));
+            activatedIcon.setImage(new Image(getClass().getResourceAsStream("/image/check.png")));
 
         }else {
             Platform.runLater(()-> statusLabel.setText("No user logged in!"));
