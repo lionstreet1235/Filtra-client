@@ -7,6 +7,8 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
 
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.example.ui.controller.OtpViewController"
@@ -14,7 +16,15 @@
 
     <children>
         <VBox alignment="CENTER" spacing="15.0" AnchorPane.leftAnchor="25.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="25.0" AnchorPane.bottomAnchor="25.0">
-            <Label styleClass="field-label" text="Enter your OTP!" />
+            <HBox>
+                <ImageView fitHeight="16" fitWidth="16" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@image_register/otp.png"/>
+                    </image>
+                </ImageView>
+                <Label styleClass="field-label" text="Enter your OTP!" />
+            </HBox>
+
             <TextField fx:id="otpField" prefWidth="200.0"/>
             <Button fx:id="otpBtn" styleClass="action-button" text="Verify" onAction="#handleOtpButtonAction"/>
             <Label styleClass="field-label" text="Please check your email!" />
