@@ -59,6 +59,8 @@ public class ClientController {
     private Button downloadButton;
     @FXML
     private Button showFilesButton;
+    @FXML
+    private Button removeButton;
 
     // View Show Profile
     @FXML
@@ -256,6 +258,19 @@ public class ClientController {
                 }
             });
         }).start();
+    }
+    @FXML
+    private void removeFileorDirectory() throws IOException {
+        HBox selectedItem = (HBox) remoteFilesList.getSelectionModel().getSelectedItem();
+        if (selectedItem == null) {
+            Platform.runLater(() -> statusLabel.setText("Please select a file or directory to remove"));
+            return;
+        }
+        Label label = (Label) selectedItem.getChildren().get(1); // assuming label is the second child in HBox
+        String selectedFile = label.getText().substring(1).trim();
+        out.println("rm " + selectedFile);
+        String remove_status = in.readLine();
+        Platform.runLater(()->statusLabel.setText(remove_status));
     }
 
 
