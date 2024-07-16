@@ -34,8 +34,8 @@ public class ClientController {
     public ListView sharedFilesList;
 
 
-    private BufferedReader in = null;
-    private PrintWriter out = null;
+    public static BufferedReader in = null;
+    public static PrintWriter out = null;
     private static User user_login;
 
 

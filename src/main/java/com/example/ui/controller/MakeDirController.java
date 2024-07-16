@@ -13,6 +13,9 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ConnectException;
 
+import static com.example.ui.controller.ClientController.in;
+import static com.example.ui.controller.ClientController.out;
+
 public class MakeDirController {
 
     public Button createDirButton;
@@ -21,9 +24,8 @@ public class MakeDirController {
 
     @FXML
     private void makeDir(){
-        try (
-                PrintWriter out = new PrintWriter(ClientController.controlSocket.getOutputStream(), true);
-                BufferedReader in = new BufferedReader(new InputStreamReader(ClientController.controlSocket.getInputStream()))) {
+        try
+                 {
 
           String dirName = dirTextField.getText();
           out.println("mkdir " + dirName);
