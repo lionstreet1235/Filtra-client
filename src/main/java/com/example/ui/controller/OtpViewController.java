@@ -13,6 +13,9 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ConnectException;
 
+import static com.example.ui.controller.ClientController.in;
+import static com.example.ui.controller.ClientController.out;
+
 
 public class OtpViewController {
 
@@ -23,9 +26,8 @@ public class OtpViewController {
 
     @FXML
     private void handleOtpButtonAction(){
-        try (
-             PrintWriter out = new PrintWriter(ClientController.controlSocket.getOutputStream(), true);
-             BufferedReader in = new BufferedReader(new InputStreamReader(ClientController.controlSocket.getInputStream()))) {
+        try
+             {
 
 
             String activateStatus = in.readLine();
