@@ -27,9 +27,7 @@ public class OtpViewController {
     @FXML
     private void handleOtpButtonAction(){
         try
-             {
-
-
+        {
             String activateStatus = in.readLine();
             if (activateStatus.contains("nope")) {
                 String otp = otpField.getText();
