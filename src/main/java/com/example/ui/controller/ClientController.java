@@ -270,7 +270,7 @@ public class ClientController {
         String selectedFile = label.getText().substring(1).trim();
         out.println("rm " + selectedFile);
         String remove_status = in.readLine();
-        Platform.runLater(()->statusLabel.setText(remove_status));
+        Platform.runLater(()->statusLabel.setText(remove_status+" "+selectedFile));
     }
 
 
@@ -500,4 +500,22 @@ public class ClientController {
         }
 
     }
+    @FXML
+    private void showShareFileForm(ActionEvent actionEvent){
+        try{
+            if(user_login!=null){
+                FXMLLoader fxmloader = new FXMLLoader(HelloApplication.class.getResource("share-view.fxml"));
+                Parent root = fxmloader.load();
+
+                Stage mkDirStage = new Stage();
+                mkDirStage.setTitle("Share files");
+                mkDirStage.setScene(new Scene(root));
+                mkDirStage.show();
+            }
+
+        }catch (IOException e){
+            throw new RuntimeException(e);
+        }
+    }
+
 }

@@ -23,14 +23,15 @@ public class MakeDirController {
     private TextField dirTextField;
 
     @FXML
-    private void makeDir(){
-        try
-                 {
+    private void makeDir() {
+        try {
 
-          String dirName = dirTextField.getText();
-          out.println("mkdir " + dirName);
-          String status =in.readLine();
-          Platform.runLater(() -> {showAlert("status",status);});
+            String dirName = dirTextField.getText();
+            out.println("mkdir " + dirName);
+            String status = in.readLine();
+            Platform.runLater(() -> {
+                showAlert("status", status);
+            });
 
 
         } catch (ConnectException e) {
@@ -41,6 +42,7 @@ public class MakeDirController {
 
 
     }
+
     private void showAlert(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);
