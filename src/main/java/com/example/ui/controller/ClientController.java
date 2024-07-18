@@ -529,5 +529,61 @@ public class ClientController {
             throw new RuntimeException(e);
         }
     }
+    @FXML
+    private void getSharedFiles(ActionEvent actionEvent) {
+        try{
+            HBox selectedItem = (HBox) sharedFilesList.getSelectionModel().getSelectedItem();
+
+            if (selectedItem == null) {
+                Platform.runLater(() -> statusLabel.setText("Please select a file to download."));
+                return;
+            }
+
+            Label label = (Label) selectedItem.getChildren().get(1); // assuming label is the second child in HBox
+            String input = label.getText();
+            String selectedSharedFile = input.substring(input.indexOf("F:") + 3, input.indexOf("FROM:")).trim();
+            String selectedSharedEmail = input.substring(input.indexOf("FROM:")+5).trim();
+            System.out.println(selectedSharedEmail);
+            System.out.println(selectedSharedFile);
+
+            new Thread(() -> {
+                synchronized (out) {
+                    String downloadSharedFile = selectedSharedFile;
+                    String sharedEmail = selectedSharedEmail;
+                    out.println("getfs " +sharedEmail+" "+ downloadSharedFile);
+                    out.flush();
+                }
+
+                Platform.runLater(() -> {
+                    FileChooser fileChooser = new FileChooser();
+                    fileChooser.setInitialFileName(selectedSharedFile);
+                    Stage stage = (Stage) downloadButton.getScene().getWindow();
+                    File file = fileChooser.showSaveDialog(stage);
+
+                    if (file != null) {
+                        new Thread(() -> {
+                            try (Socket dataSocket = new Socket(SERVER_NAME, DATA_PORT);
+                                 BufferedInputStream dataIn = new BufferedInputStream(dataSocket.getInputStream());
+                                 BufferedOutputStream fileOut = new BufferedOutputStream(new FileOutputStream(file))) {
+
+                                byte[] buffer = new byte[4096];
+                                int bytesRead;
+                                while ((bytesRead = dataIn.read(buffer)) != -1) {
+                                    fileOut.write(buffer, 0, bytesRead);
+                                }
+                                fileOut.flush();
+                                Platform.runLater(() -> statusLabel.setText("DOWNLOAD COMPLETE!"));
+                            } catch (IOException e) {
+                                System.out.println("File download error: " + e.getMessage());
+                                Platform.runLater(() -> statusLabel.setText("DOWNLOAD FAILED!"));
+                            }
+                        }).start();
+                    }
+                });
+            }).start();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 }
