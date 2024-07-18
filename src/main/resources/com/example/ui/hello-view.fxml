@@ -121,6 +121,7 @@
                         <Button fx:id="makeDirButton" styleClass="action-button"  text="MakeDir" onAction="#showMakeDirForm"/>
                         <Button fx:id="removeButton" styleClass="action-button" text="Remove" onAction="#removeFileorDirectory"/>
                         <Button fx:id="shareButton" styleClass="action-button" text="Share" onAction="#showShareFileForm"/>
+                        <Button fx:id="getShareButton" styleClass="action-button" text="Get Shared" onAction="#getSharedFiles"/>
                     </VBox>
                 </HBox>
             </Tab>
