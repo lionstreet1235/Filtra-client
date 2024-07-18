@@ -26,7 +26,12 @@
             </HBox>
 
             <TextField fx:id="emailField" prefWidth="200.0"/>
-            <Button fx:id="otpBtn" styleClass="action-button" text="Share" />
+
+            <CheckBox fx:id="checkBoxFull" text="FULL" onAction="#setFullMessage"/>
+            <CheckBox fx:id="checkBoxRead" text="READ" onAction="#setReadMessage"/>
+            <CheckBox fx:id="checkBoxWrite" text="WRITE" onAction="#setWriteMessage"/>
+
+            <Button fx:id="otpBtn" styleClass="action-button" text="Share" onAction="#ShareFile" />
 
         </VBox>
     </children>
