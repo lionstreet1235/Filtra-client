@@ -1,6 +1,7 @@
 package com.example.ui.controller;
 
 import com.example.ui.HelloApplication;
+import com.example.ui.model.SharedDataModel;
 import com.google.gson.Gson;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -25,7 +26,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class ClientController {
-
+    public  static String selectedFile4Share;
     private static final String SERVER_NAME = "localhost";
     private static final int DATA_PORT = 2000;
     private static final int CONTROL_PORT = 2100;
@@ -224,6 +225,7 @@ public class ClientController {
 
         Label label = (Label) selectedItem.getChildren().get(1); // assuming label is the second child in HBox
         String selectedFile = label.getText().substring(1).trim();
+
         new Thread(() -> {
             synchronized (out) {
                 String downloaFile = selectedFile;
@@ -504,6 +506,16 @@ public class ClientController {
     private void showShareFileForm(ActionEvent actionEvent){
         try{
             if(user_login!=null){
+                HBox selectedItem = (HBox) remoteFilesList.getSelectionModel().getSelectedItem();
+
+                if (selectedItem == null) {
+                    Platform.runLater(() -> statusLabel.setText("Please select a file to download."));
+                    return;
+                }
+
+                Label label = (Label) selectedItem.getChildren().get(1); // assuming label is the second child in HBox
+                String selectedFile = label.getText().substring(1).trim();
+                SharedDataModel.setSelectedFileForShare(selectedFile);// truyen qua model de co the lay ra o class khac
                 FXMLLoader fxmloader = new FXMLLoader(HelloApplication.class.getResource("share-view.fxml"));
                 Parent root = fxmloader.load();
 
