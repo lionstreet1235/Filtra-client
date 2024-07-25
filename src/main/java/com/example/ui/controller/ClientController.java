@@ -84,6 +84,8 @@ public class ClientController {
     private ImageView dateCreatedIcon;
     @FXML
     private ImageView activatedIcon;
+    static final Object pauseLock = new Object();
+    static boolean isPaused = false;
 
     // Make dir view
     @FXML
@@ -133,14 +135,15 @@ public class ClientController {
                 out.println(username);
                 out.println(password);
                 String login_status = in.readLine();
-                if(response.contains("-- LOGIN --")) {
-                    Platform.runLater(() -> statusLabel.setText("Login successful!"));
+                try{
+                    Gson gson = new Gson();
+                    user_login = gson.fromJson(login_status, User.class);
+                    Platform.runLater(() -> showAlert("status", "login successful"));
+                    Platform.runLater(()-> statusLabel.setText("Connected"));
+                }catch (Exception e){
+                    Platform.runLater(()->showAlert("status","User did not exist"));
                 }
-                Gson gson = new Gson();
-                user_login = gson.fromJson(login_status, User.class);
-//                if (remoteFilesList.hasProperties()){
-//                    showUserFile();
-//                }
+
 
 
 
@@ -189,27 +192,27 @@ public class ClientController {
 
             new Thread(() -> {
                 try (Socket dataSocket = new Socket(SERVER_NAME, DATA_PORT);
-                     BufferedInputStream fileIn = new BufferedInputStream(new FileInputStream(uploadFile));
-                     BufferedOutputStream dataOut = new BufferedOutputStream(dataSocket.getOutputStream())) {
-
+                     BufferedInputStream in = new BufferedInputStream(new FileInputStream(uploadFile)); BufferedOutputStream out = new BufferedOutputStream(dataSocket.getOutputStream()))
+                {
                     byte[] buffer = new byte[4096];
                     int bytesRead;
-                    while ((bytesRead = fileIn.read(buffer)) != -1) {
-                        dataOut.write(buffer, 0, bytesRead);
+                    while ((bytesRead = in.read(buffer)) != -1)
+                    {
+                        synchronized (pauseLock)
+                        {
+                            while (isPaused)
+                            {
+                                pauseLock.wait();
+                            }
+                            out.write(buffer, 0, bytesRead);
+                        }
                     }
                     out.flush();
                     dataSocket.close();
-                    String response;
-                    response = in.readLine();
-
-
-                    if (response.contains("Uploading ... > ")) {
-                        Platform.runLater(() -> statusLabel.setText("UPLOAD COMPLETE!"));
-                    }
-
-                } catch (IOException e) {
-                    System.out.println("File upload error: " + e.getMessage());
-                    Platform.runLater(() -> statusLabel.setText("UPLOAD FAILED!"));
+                    Platform.runLater(()->showAlert("status", "File uploaded successfully!"));
+                } catch (IOException | InterruptedException e)
+                {
+                    Platform.runLater(() -> showAlert("Error", "File upload failed: " + e.getMessage()));
                 }
             }).start();
         }
@@ -251,6 +254,7 @@ public class ClientController {
                                 fileOut.write(buffer, 0, bytesRead);
                             }
                             fileOut.flush();
+                            dataSocket.close();
                             Platform.runLater(() -> statusLabel.setText("DOWNLOAD COMPLETE!"));
                         } catch (IOException e) {
                             System.out.println("File download error: " + e.getMessage());
@@ -273,6 +277,7 @@ public class ClientController {
         out.println("rm " + selectedFile);
         String remove_status = in.readLine();
         Platform.runLater(()->statusLabel.setText(remove_status+" "+selectedFile));
+        showUserFile();
     }
 
 
@@ -332,7 +337,7 @@ public class ClientController {
 
     @FXML
     private void showUserFile() {
-
+        new Thread(() -> {
             try {
                 out.println("LS");
                 List<String> fileList = new ArrayList<>();
@@ -348,18 +353,19 @@ public class ClientController {
                     fileList.add(response_LS);
                 }
                 out.flush();
-                if(user_login != null){
+                if (user_login != null) {
                     Platform.runLater(() -> updateRemoteFilesList(fileList));
-                }else {
-                    Platform.runLater(()-> statusLabel.setText("No user logged in!"));
+                } else {
+                    Platform.runLater(() -> statusLabel.setText("No user logged in!"));
                 }
-
             } catch (IOException e) {
                 Platform.runLater(() -> {
                     throw new RuntimeException(e);
                 });
             }
+        }).start();
     }
+
 
     private void updateRemoteFilesList(List<String> fileList) {
         remoteFilesList.getItems().clear();
@@ -371,7 +377,6 @@ public class ClientController {
 
             if (file.startsWith("D")) {
                 iconPath = "/image/File_Explorer.png";
-
             } else if (file.startsWith("F")) {
                 iconPath = "/image/Document.png";
             }
@@ -397,8 +402,8 @@ public class ClientController {
             items.add(hBox);
         }
         remoteFilesList.setItems(items);
-
     }
+
     @FXML
     private void showSharedFiles() throws IOException {
         out.println("LSHR");
@@ -572,6 +577,7 @@ public class ClientController {
                                     fileOut.write(buffer, 0, bytesRead);
                                 }
                                 fileOut.flush();
+                                dataSocket.close();
                                 Platform.runLater(() -> statusLabel.setText("DOWNLOAD COMPLETE!"));
                             } catch (IOException e) {
                                 System.out.println("File download error: " + e.getMessage());
@@ -584,6 +590,13 @@ public class ClientController {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+    private void showAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 
 }
