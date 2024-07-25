@@ -7,11 +7,18 @@
     import javafx.stage.Stage;
     import com.google.gson.Gson;
 
+    import javax.crypto.BadPaddingException;
+    import javax.crypto.Cipher;
+    import javax.crypto.IllegalBlockSizeException;
     import java.io.*;
     import java.net.Socket;
     import java.net.ConnectException;
     import java.time.LocalDateTime;
+    import java.util.Base64;
     import java.util.UUID;
+
+    import static com.example.ui.controller.ClientController.in;
+    import static com.example.ui.controller.ClientController.out;
 
     public class RegistrationViewController {
         public static User user;
@@ -27,9 +34,7 @@
         private PasswordField confirmPasswordField;
         @FXML
         private Button registerButton;
-
-        private final String SERVER_NAME = "localhost";
-        private final int CONTROL_PORT = 2100;
+        protected static Cipher cipher;
 
 
 
@@ -55,9 +60,7 @@
                 showAlert("Error", "Invalid email format.");
                 return;
             }
-            try (Socket registrationSocket = new Socket(SERVER_NAME, CONTROL_PORT);
-                 PrintWriter out = new PrintWriter(registrationSocket.getOutputStream(), true);
-                 BufferedReader in = new BufferedReader(new InputStreamReader(registrationSocket.getInputStream()))) {
+            try  {
 
                 out.println("REG");
                 String registerStatus = in.readLine();
@@ -66,8 +69,12 @@
                     return;
                 }
                 Gson gson = new Gson();
-                user = new User(UUID.randomUUID().toString(), fullName, username, email, password, LocalDateTime.now().toString(), true, false, 2);
-                out.println(gson.toJson(user));
+                byte[] username_byte = cipher.doFinal(username.getBytes());
+                byte[] passwd_byte = cipher.doFinal(password.getBytes());
+                String encrypted_username = Base64.getEncoder().encodeToString(username_byte);
+                String encrypted_passwd = Base64.getEncoder().encodeToString(passwd_byte);
+                User register_user = new User(UUID.randomUUID().toString(), fullName, encrypted_username, email, encrypted_passwd, LocalDateTime.now().toString(), true, false, 0);
+                out.println(gson.toJson(register_user));
 
                 Platform.runLater(() -> {
                     Platform.runLater(()->{showAlert("Success", registerStatus);});
@@ -78,10 +85,13 @@
                 Platform.runLater(() -> showAlert("Error", "Could not connect to the server."));
             } catch (IOException e) {
                 Platform.runLater(() -> showAlert("Error", "Registration failed: " + e.getMessage()));
+            } catch (IllegalBlockSizeException e) {
+                throw new RuntimeException(e);
+            } catch (BadPaddingException e) {
+                throw new RuntimeException(e);
             }
 
-            Stage stage = (Stage) registerButton.getScene().getWindow();
-            stage.close();
+
         }
 
         private void showAlert(String title, String message) {
