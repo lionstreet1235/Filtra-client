@@ -21,6 +21,7 @@ import javafx.stage.Stage;
 import com.example.ui.model.User;
 import java.io.*;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -109,8 +110,6 @@ public class ClientController {
     @FXML
     private void connectToServer() {
 
-        String server = serverField.getText();
-        int port = Integer.parseInt(portField.getText());
         String username = usernameField.getText();
         String password = passwordField.getText();
         if (username == null || username.isEmpty() || password == null || password.isEmpty()) {
@@ -118,15 +117,11 @@ public class ClientController {
             return;
         }
 
-        new Thread(() -> {
+
             try {
 
-                controlSocket = new Socket(server, port);
-                in = new BufferedReader(new InputStreamReader(controlSocket.getInputStream()));
-                out = new PrintWriter(controlSocket.getOutputStream(), true);
-
-
                 out.println("LOG");
+                out.flush();
                 String response = in.readLine();
                 if (response.contains("You need to logout first!")) {
                     return;
@@ -150,7 +145,7 @@ public class ClientController {
             } catch (IOException e) {
                 Platform.runLater(() -> statusLabel.setText("Connection failed: " + e.getMessage()));
             }
-        }).start();
+
     }
 
 
@@ -181,42 +176,56 @@ public class ClientController {
         File file = fileChooser.showOpenDialog(stage);
 
         if (file != null) {
-            String fileName = file.getName();
-            File uploadFile = new File(file.getAbsolutePath());
-
-            out.println("up " + fileName);
-            out.println(uploadFile.length());
-
-
-
-
             new Thread(() -> {
-                try (Socket dataSocket = new Socket(SERVER_NAME, DATA_PORT);
-                     BufferedInputStream in = new BufferedInputStream(new FileInputStream(uploadFile)); BufferedOutputStream out = new BufferedOutputStream(dataSocket.getOutputStream()))
-                {
-                    byte[] buffer = new byte[4096];
-                    int bytesRead;
-                    while ((bytesRead = in.read(buffer)) != -1)
-                    {
-                        synchronized (pauseLock)
-                        {
-                            while (isPaused)
-                            {
-                                pauseLock.wait();
-                            }
-                            out.write(buffer, 0, bytesRead);
-                        }
-                    }
+                try {
+                    out.println("up " + file.getName());
+                    out.println(file.length());
                     out.flush();
-                    dataSocket.close();
-                    Platform.runLater(()->showAlert("status", "File uploaded successfully!"));
-                } catch (IOException | InterruptedException e)
-                {
+
+                    String status;
+                    try {
+                        status = in.readLine();
+                    } catch (IOException e) {
+                        Platform.runLater(() -> showAlert("Error", "File upload failed: " + e.getMessage()));
+                        return;
+                    }
+
+                    if (status.contains("Login") || status.contains("large")) {
+                        Platform.runLater(() -> showAlert("Error", "File upload failed: " + status));
+                        return;
+                    }
+
+                    try (Socket dataSocket = new Socket(SERVER_NAME, DATA_PORT);
+                         BufferedInputStream fileInputStream = new BufferedInputStream(new FileInputStream(file));
+                         BufferedOutputStream socketOutputStream = new BufferedOutputStream(dataSocket.getOutputStream())) {
+
+                        byte[] buffer = new byte[4096];
+                        int bytesRead;
+                        while ((bytesRead = fileInputStream.read(buffer)) != -1) {
+                            synchronized (pauseLock) {
+                                while (isPaused) {
+                                    pauseLock.wait();
+                                }
+                                socketOutputStream.write(buffer, 0, bytesRead);
+                            }
+                        }
+                        socketOutputStream.flush();
+
+                        Platform.runLater(() -> {
+                            showAlert("Status", "File uploaded successfully!");
+                            showUserFile(); // Update the file list after upload
+                        });
+                    } catch (IOException | InterruptedException e) {
+                        Platform.runLater(() -> showAlert("Error", "File upload failed: " + e.getMessage()));
+                    }
+                } catch (Exception e) {
                     Platform.runLater(() -> showAlert("Error", "File upload failed: " + e.getMessage()));
                 }
             }).start();
         }
     }
+
+
     @FXML
     private void downloadFile() {
         HBox selectedItem = (HBox) remoteFilesList.getSelectionModel().getSelectedItem();
@@ -233,7 +242,6 @@ public class ClientController {
             synchronized (out) {
                 String downloaFile = selectedFile;
                 out.println("get " + downloaFile);
-                out.flush();
             }
 
             Platform.runLater(() -> {
@@ -255,7 +263,13 @@ public class ClientController {
                             }
                             fileOut.flush();
                             dataSocket.close();
-                            Platform.runLater(() -> statusLabel.setText("DOWNLOAD COMPLETE!"));
+                            Platform.runLater(() -> {
+                                try {
+                                    showAlert("status",in.readLine());
+                                } catch (IOException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            });
                         } catch (IOException e) {
                             System.out.println("File download error: " + e.getMessage());
                             Platform.runLater(() -> statusLabel.setText("DOWNLOAD FAILED!"));
@@ -275,8 +289,9 @@ public class ClientController {
         Label label = (Label) selectedItem.getChildren().get(1); // assuming label is the second child in HBox
         String selectedFile = label.getText().substring(1).trim();
         out.println("rm " + selectedFile);
+        out.flush();
         String remove_status = in.readLine();
-        Platform.runLater(()->statusLabel.setText(remove_status+" "+selectedFile));
+        Platform.runLater(()->showAlert("status",remove_status));
         showUserFile();
     }
 
@@ -287,6 +302,7 @@ public class ClientController {
     @FXML
     private void showInfo(){
         out.println("INFO");
+        out.flush();
         if(user_login!= null){
             unameProfilefield.setText(user_login.getUsername());
             fullnamefield.setText(user_login.getFullname());
@@ -322,13 +338,15 @@ public class ClientController {
     @FXML
     private void logOut() throws IOException {
         out.println("OUT");
+        out.flush();
         user_login = null;
         String logOut_status = in.readLine();
-        Platform.runLater(()-> statusLabel.setText(logOut_status));
+        Platform.runLater(()-> statusLabel.setText("DISCONNECTED"));
         if(logOut_status.contains("See you again ")) {
             Platform.runLater(this::setFieldNull);
             Platform.runLater(()-> remoteFilesList = null);
             Platform.runLater(this::showUserFile);
+
         }
 
     }
@@ -365,6 +383,7 @@ public class ClientController {
             }
         }).start();
     }
+
 
 
     private void updateRemoteFilesList(List<String> fileList) {
@@ -423,7 +442,7 @@ public class ClientController {
         }
         for (String file : list_file) {
             fileList.add(file);
-        }
+        }out.flush();
 
         // Cập nhật danh sách tệp chia sẻ trên giao diện người dùng
         Platform.runLater(() -> updateSharedFilesList(fileList));
@@ -481,6 +500,7 @@ public class ClientController {
                 registrationStage.setScene(new Scene(root));
                 registrationStage.show();
                 out.println("OTP");
+                out.flush();
             }else Platform.runLater(()->statusLabel.setText("No user logged in!"));
 
 
