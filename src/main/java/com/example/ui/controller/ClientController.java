@@ -653,6 +653,58 @@ public class ClientController {
             throw new RuntimeException(e);
         }
     }
+    @FXML
+    private  void pauseUpload()
+    {
+
+        synchronized (pauseLock)
+        {
+            isPaused = true;
+        }
+        Platform.runLater(()->showAlert("status", "Upload paused!"));
+    }
+    @FXML
+    private  void resumeUpload()
+    {
+        System.out.println("Resume upload!");
+        synchronized (pauseLock)
+        {
+            isPaused = false;
+            pauseLock.notifyAll();
+        }
+        Platform.runLater(()->showAlert("status", "Upload resumed!"));
+    }
+    @FXML
+    private void pauseDownload()
+    {
+        System.out.println("Paused download ... (Type 'rd' to resume download)");
+        out.println("pd");
+        out.flush();
+        Platform.runLater(()->showAlert("status", "Download paused!"));
+    }
+    @FXML
+    private void resumeDownload()
+    {
+        System.out.println("Resume download");
+        out.println("rd");
+        out.flush();
+    }
+    @FXML
+    private void AnonymousON() throws IOException {
+        out.println("ANONMODE ON");
+        out.flush();
+        String status = in.readLine();
+        Platform.runLater(()->showAlert("status", status));
+    }
+    @FXML
+    private void AnonymousOFF() throws IOException {
+        out.println("ANONMODE OFF");
+        out.flush();
+        String status = in.readLine();
+        Platform.runLater(()->showAlert("status", status));
+    }
+
+
     private void showAlert(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);

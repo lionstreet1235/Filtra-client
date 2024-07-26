@@ -113,7 +113,7 @@
                             <Label styleClass="section-label" text="Remote Files" />
                             <Button fx:id="showFilesButton" onAction="#showUserFile" styleClass="action-button" text="Show Files" />
                         </HBox>
-                        <ListView fx:id="remoteFilesList" prefHeight="400" prefWidth="450" />
+                        <ListView fx:id="remoteFilesList" prefHeight="500" prefWidth="450" />
                     </VBox>
                     <VBox alignment="TOP_LEFT" spacing="10">
                         <HBox spacing="10">
@@ -121,7 +121,7 @@
                             <Button fx:id="showSharedFilesButton" onAction="#showSharedFiles" styleClass="action-button" text="Show Files" />
                         </HBox>
 
-                        <ListView fx:id="sharedFilesList" prefHeight="400" prefWidth="450" />
+                        <ListView fx:id="sharedFilesList" prefHeight="500" prefWidth="450" />
                     </VBox>
                     <VBox alignment="CENTER_LEFT" spacing="10">
                         <Button  fx:id="downloadButton"  styleClass="action-button" text="Download" onAction="#downloadFile"/>
@@ -130,6 +130,10 @@
                         <Button fx:id="removeButton" styleClass="action-button" text="Remove" onAction="#removeFileorDirectory"/>
                         <Button fx:id="shareButton" styleClass="action-button" text="Share" onAction="#showShareFileForm"/>
                         <Button fx:id="getShareButton" styleClass="action-button" text="Get Shared" onAction="#getSharedFiles"/>
+                        <Button fx:id="pauseUP" styleClass="action-button" text="PauseUP" onAction="#pauseUpload"/>
+                        <Button fx:id="resumeUP" styleClass="action-button" text="ResumeUP" onAction="#resumeUpload"/>
+                        <Button fx:id="pauseDown" styleClass="action-button" text="PauseDown" onAction="#pauseDownload"/>
+                        <Button fx:id="resumeDown" styleClass="action-button" text="ResumeDown" onAction="#resumeDownload"/>
                     </VBox>
                 </HBox>
             </Tab>
@@ -171,6 +175,16 @@
 
                         <Button fx:id="logoutButton" onAction="#logOut" styleClass="action-button" onMouseClicked="#logOut" text="Logout"  />
                         <Button text="Active" styleClass="action-button" onAction="#showActiveWindow" />
+                        <VBox>
+                            <Label text="Anonymouse" styleClass="header-label"/>
+                            <HBox>
+                                <Button text="ON"  onAction="#AnonymousON" />
+                                <Button text="OFF"  onAction="#AnonymousOFF" />
+                            </HBox>
+
+
+                        </VBox>
+
                     </VBox>
 
 
