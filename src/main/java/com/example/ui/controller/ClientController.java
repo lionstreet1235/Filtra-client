@@ -19,11 +19,18 @@ import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import com.example.ui.model.User;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.KeyGenerator;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.List;
 
 public class ClientController {
@@ -88,6 +95,13 @@ public class ClientController {
     static final Object pauseLock = new Object();
     static boolean isPaused = false;
 
+    //cipher
+    protected static Cipher cipher;
+    private static final String AES_ALGO = "AES";
+    private static final String secret_key = "tnqa_osint_ninja";
+    protected static final SecretKeySpec secretKeySpec = new SecretKeySpec(secret_key.getBytes(), AES_ALGO);
+
+
     // Make dir view
     @FXML
     private Button makeDirButton;
@@ -95,7 +109,6 @@ public class ClientController {
 
     @FXML
     private void initialize() throws IOException {
-        connectButton.setOnAction(event -> connectToServer());
         uploadButton.setOnAction(event -> browseFileNew());
         uploadButton.setDisable(false);
         downloadButton.setDisable(false);
@@ -103,15 +116,25 @@ public class ClientController {
         controlSocket = new Socket(SERVER_NAME, CONTROL_PORT);
         in = new BufferedReader(new InputStreamReader(controlSocket.getInputStream()));
         out = new PrintWriter(controlSocket.getOutputStream(), true);
+        try {
+            KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
+            keyGenerator.init(128);
+            cipher = Cipher.getInstance(AES_ALGO);
+            cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
 
     }
 
     @FXML
-    private void connectToServer() {
+    private void connectToServer() throws IllegalBlockSizeException, BadPaddingException {
 
         String username = usernameField.getText();
         String password = passwordField.getText();
+        byte[] enc_username = cipher.doFinal(username.getBytes());
+        byte[] enc_passwd = cipher.doFinal(password.getBytes());
         if (username == null || username.isEmpty() || password == null || password.isEmpty()) {
             Platform.runLater(() -> statusLabel.setText("Username and password are required"));
             return;
@@ -127,8 +150,8 @@ public class ClientController {
                     return;
                 }
 
-                out.println(username);
-                out.println(password);
+                out.println(Base64.getEncoder().encodeToString(enc_username));
+                out.println(Base64.getEncoder().encodeToString(enc_passwd));
                 String login_status = in.readLine();
                 try{
                     Gson gson = new Gson();
