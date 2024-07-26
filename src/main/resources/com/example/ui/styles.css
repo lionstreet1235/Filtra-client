@@ -8,13 +8,13 @@
 .header-label {
     -fx-font-size: 24px;
     -fx-font-weight: bold;
-    -fx-text-fill: black; /* Change text color to black */
+    -fx-text-fill: black; /* Thay đổi màu chữ thành màu đen */
 }
 
 .field-label {
     -fx-font-size: 15px;
     -fx-font-weight: bold;
-    -fx-text-fill: black; /* Change text color to black */
+    -fx-text-fill: black; /* Thay đổi màu chữ thành màu đen */
 }
 
 .textInfo {
@@ -23,18 +23,15 @@
     -fx-font-weight: bold;
 }
 
-.connect-button, .register-button, .browse-button {
-    -fx-background-color: #4CAF50; /* Green */
+.action-button, .connect-button, .register-button, .browse-button {
+    -fx-background-color: #4CAF50; /* Màu xanh lá cây */
     -fx-text-fill: white;
     -fx-font-size: 14px;
-    -fx-padding: 10 20 10 20;
-}
-
-.action-button {
-    -fx-background-color: #4CAF50; /* Green */
-    -fx-text-fill: white;
-    -fx-font-size: 14px;
-    -fx-padding: 10 20 10 20;
+    -fx-padding: 10 20;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+    -fx-margin: 5;
+    -fx-pref-width: 150px; /* Chiều rộng cố định */
 }
 
 .status-label {
@@ -48,10 +45,10 @@
 }
 
 .toolbar-button {
-    -fx-background-color: #008CBA; /* Blue */
+    -fx-background-color: #008CBA; /* Màu xanh da trời */
     -fx-text-fill: white;
     -fx-font-size: 14px;
-    -fx-padding: 5 15 5 15;
+    -fx-padding: 5 15;
     -fx-border-radius: 5;
     -fx-background-radius: 5;
 }
