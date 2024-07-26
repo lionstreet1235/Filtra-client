@@ -43,6 +43,7 @@ public class ClientController {
     public ListView sharedFilesList;
 
 
+
     public static BufferedReader in = null;
     public static PrintWriter out = null;
     private static User user_login;
@@ -233,6 +234,7 @@ public class ClientController {
                             }
                         }
                         socketOutputStream.flush();
+                        dataSocket.close();
 
                         Platform.runLater(() -> {
                             showAlert("Status", "File uploaded successfully!");
@@ -367,7 +369,7 @@ public class ClientController {
         Platform.runLater(()-> statusLabel.setText("DISCONNECTED"));
         if(logOut_status.contains("See you again ")) {
             Platform.runLater(this::setFieldNull);
-            Platform.runLater(()-> remoteFilesList = null);
+//            Platform.runLater(()-> remoteFilesList = null);
             Platform.runLater(this::showUserFile);
 
         }
@@ -631,6 +633,23 @@ public class ClientController {
                 });
             }).start();
         } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+    @FXML
+    private void showNotificationForm(ActionEvent actionEvent) {
+        try{
+            if(user_login!=null){
+                FXMLLoader fxmloader = new FXMLLoader(HelloApplication.class.getResource("notify-view.fxml"));
+                Parent root = fxmloader.load();
+                Stage notifyStage = new Stage();
+                notifyStage.setTitle("NOTIFICATION");
+                notifyStage.setScene(new Scene(root));
+                notifyStage.show();
+
+
+            }else Platform.runLater(()->showAlert("Alert", "Please login first !"));
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
