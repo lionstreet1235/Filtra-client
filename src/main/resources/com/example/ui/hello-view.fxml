@@ -16,8 +16,16 @@
             </padding>
             <Label styleClass="header-label" text="FTP Client" />
 
-            <Button fx:id="helpButton" styleClass="toolbar-button" text="Trợ giúp" />
+
             <Button fx:id="profileButton" styleClass="toolbar-button" onAction="#showInfo" text="Profile" />
+            <Button fx:id="notiButton" styleClass="toolbar-button" onAction="#showNotificationForm">
+                <graphic>
+                    <ImageView fitWidth="20.0" fitHeight="20.0">
+                        <Image url="@image_register/notification.png" />
+                    </ImageView>
+                </graphic>
+            </Button>
+
             <Text> </Text>
 
 
